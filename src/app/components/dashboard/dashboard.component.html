@@ -1,0 +1,216 @@
+<div class="container">
+  <div class="dashboard-header">
+    <h2><span class="material-icons">dashboard</span>Panel de Control</h2>
+    <button class="btn btn-primary" (click)="toggleBusinessForm()">
+      {{ showBusinessForm ? 'Cancelar' : '+ Nuevo Negocio' }}
+    </button>
+  </div>
+
+  <!-- Formulario de nuevo negocio -->
+  <app-business-form 
+    *ngIf="showBusinessForm"
+    (businessCreated)="onBusinessCreated()">
+  </app-business-form>
+
+  <!-- Sin negocios -->
+  <div class="empty-state card" *ngIf="businesses.length === 0 && !showBusinessForm">
+    <h3>¡Bienvenido a AppCogs!</h3>
+    <p>Comienza creando tu primer negocio para empezar a gestionar costos y calcular precios.</p>
+    <button class="btn btn-primary" (click)="toggleBusinessForm()">
+      Crear Mi Primer Negocio
+    </button>
+  </div>
+
+  <!-- Dashboard principal -->
+  <div *ngIf="businesses.length > 0 && !showBusinessForm">
+    <!-- Selector de negocio -->
+    <div class="business-selector card" *ngIf="businesses.length > 1">
+      <label>Selecciona un negocio:</label>
+      <div class="business-buttons">
+        <button 
+          *ngFor="let business of businesses"
+          class="business-btn"
+          [class.active]="selectedBusiness?.id === business.id"
+          (click)="selectBusiness(business)">
+          {{ business.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Información del negocio actual -->
+    <div class="business-info card" *ngIf="selectedBusiness">
+      <div class="business-header">
+        <div>
+          <h3>{{ selectedBusiness.name }}</h3>
+          <p class="industry">{{ selectedBusiness.industry }}</p>
+          <p class="description" *ngIf="selectedBusiness.description">
+            {{ selectedBusiness.description }}
+          </p>
+        </div>
+        <button class="btn btn-secondary" (click)="showFixedCostsForm = !showFixedCostsForm">
+          <span class="material-icons">settings</span>
+          {{ showFixedCostsForm ? 'Ocultar' : 'Gestionar Costos Fijos' }}
+        </button>
+      </div>
+
+      <!-- Costos Fijos del Negocio -->
+      <div class="fixed-costs-section" *ngIf="showFixedCostsForm">
+        <h4><span class="material-icons">account_balance</span> Costos Fijos Mensuales del Negocio</h4>
+        <p class="info-text">
+          <span class="material-icons icon-tip">info</span>
+          Estos costos se pagan una vez al mes para todo el negocio (alquiler, servicios, salarios administrativos, etc.) 
+          y se distribuyen automáticamente entre todos tus productos.
+        </p>
+
+        <div class="fixed-costs-list" *ngIf="businessFixedCosts.length > 0">
+          <div class="fixed-cost-item" *ngFor="let cost of businessFixedCosts">
+            <div class="cost-info">
+              <strong>{{ cost.name }}</strong>
+              <span class="cost-type-badge">{{ getCostTypeLabel(cost.type) }}</span>
+            </div>
+            <div class="cost-value">${{ cost.monthlyValue | number:'1.2-2' }}/mes</div>
+            <button class="btn-icon" (click)="deleteFixedCost(cost.id)" title="Eliminar">
+              <span class="material-icons">delete</span>
+            </button>
+          </div>
+          <div class="fixed-costs-total">
+            <strong>Total Costos Fijos Mensuales:</strong>
+            <strong class="total-amount">${{ getTotalFixedCosts() | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+
+        <div class="add-fixed-cost-form">
+          <h5>Agregar Costo Fijo</h5>
+          <div class="form-inline">
+            <input 
+              type="text" 
+              [(ngModel)]="newFixedCost.name" 
+              placeholder="Nombre (ej: Alquiler)"
+              class="form-control">
+            <select [(ngModel)]="newFixedCost.type" class="form-control">
+              <option value="fixed">Costo Fijo</option>
+              <option value="overhead">Gasto General</option>
+              <option value="labor">Salario Administrativo</option>
+            </select>
+            <input 
+              type="number" 
+              [(ngModel)]="newFixedCost.monthlyValue" 
+              placeholder="Valor mensual"
+              class="form-control"
+              min="0"
+              step="0.01">
+            <button class="btn btn-success" (click)="addFixedCost()" [disabled]="!isFixedCostValid()">
+              <span class="material-icons">add</span> Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Gastos por Categoría -->
+    <div class="expense-chart-section card">
+      <h4>
+        <span class="material-icons">pie_chart</span>
+        Distribución de Gastos Mensuales por Categoría
+      </h4>
+      <div class="chart-container">
+        <div class="chart-canvas-wrapper">
+          <canvas #expenseChart width="300" height="300"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item" *ngFor="let expense of getExpensesByCategory()">
+            <div class="legend-color" [style.background-color]="expense.color"></div>
+            <div class="legend-label">
+              <span class="legend-category">{{ expense.category }}</span>
+              <span class="legend-amount">${{ expense.amount | number:'1.2-2' }}</span>
+              <span class="legend-percentage">
+                {{ getExpensePercentage(expense.amount) | number:'1.0-0' }}%
+              </span>
+            </div>
+          </div>
+          <div class="legend-total">
+            <strong>Total Mensual:</strong>
+            <strong class="total-amount">
+              ${{ getTotalExpenses() | number:'1.2-2' }}
+            </strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid grid grid-3">
+      <div class="stat-card card">
+        <div class="stat-icon"><span class="material-icons bigger--icon">inventory_2</span></div>
+        <div class="stat-value">{{ stats.totalProducts }}</div>
+        <div class="stat-label">Productos</div>
+      </div>
+
+      <div class="stat-card card">
+        <div class="stat-icon"><span class="material-icons bigger--icon">data_thresholding</span></div>
+        <div class="stat-value">{{ stats.avgMargin | number:'1.1-1' }}%</div>
+        <div class="stat-label">Margen Promedio</div>
+      </div>
+
+      <div class="stat-card card">
+        <div class="stat-icon"><span class="material-icons bigger--icon">check_box</span></div>
+        <div class="stat-value">{{ stats.profitableProducts }}/{{ stats.totalProducts }}</div>
+        <div class="stat-label">Productos Rentables</div>
+      </div>
+    </div>
+
+    <!-- Lista de productos -->
+    <div class="products-section card">
+      <div class="section-header">
+        <h3>Productos</h3>
+        <a routerLink="/calculator" class="btn btn-primary">+ Nuevo Producto</a>
+      </div>
+
+      <div class="products-list" *ngIf="getProductsForBusiness().length > 0">
+        <div class="product-item" *ngFor="let product of getProductsForBusiness()">
+          <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-details">
+              <span class="product-margin">Margen: {{ product.targetMargin }}%</span>
+              <span class="product-units" *ngIf="product.expectedMonthlyUnits">
+                {{ product.expectedMonthlyUnits }} unidades/mes
+              </span>
+              <span class="product-units warning" *ngIf="!product.expectedMonthlyUnits">
+                ⚠️ Sin unidades esperadas
+              </span>
+            </div>
+          </div>
+          <button class="btn-icon" (click)="editProductUnits(product)" title="Editar unidades esperadas">
+            <span class="material-icons">edit</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-products" *ngIf="getProductsForBusiness().length === 0">
+        <p>No hay productos registrados aún.</p>
+        <a routerLink="/calculator" class="btn btn-success">Crear Primer Producto</a>
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="quick-actions grid grid-3">
+      <a routerLink="/calculator" class="action-card card">
+        <div class="action-icon"><span class="material-icons bigger--icon">calculate</span></div>
+        <h4>Calcular Costos</h4>
+        <p>Ingresa los costos de tus productos</p>
+      </a>
+
+      <a routerLink="/analysis" class="action-card card">
+        <div class="action-icon"><span class="material-icons bigger--icon">payments</span></div>
+        <h4>Analizar Precios</h4>
+        <p>Determina el precio óptimo de venta</p>
+      </a>
+
+      <a routerLink="/education" class="action-card card">
+        <div class="action-icon"><span class="material-icons bigger--icon">menu_book</span></div>
+        <h4>Aprende</h4>
+        <p>Guías sobre gestión financiera</p>
+      </a>
+    </div>
+  </div>
+</div>

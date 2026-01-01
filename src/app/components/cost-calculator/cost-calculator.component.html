@@ -1,0 +1,300 @@
+<div class="container">
+  <h2><span class="material-icons icon-calc">calculate</span> Calculadora de Costos</h2>
+  
+  <div class="info-banner card">
+    <strong><span class="material-icons icon-tip">lightbulb</span> Consejo:</strong> 
+    Registra los costos directos de tu producto (materiales, mano de obra directa, etc.). 
+    Los costos fijos del negocio (alquiler, servicios) se gestionan desde el <a routerLink="/dashboard" style="text-decoration: underline;">Dashboard</a>.
+  </div>
+
+  <div class="calculator-container">
+    <form [formGroup]="calculatorForm" (ngSubmit)="onSubmit()" class="card">
+      <!-- Selector de modo -->
+      <div class="mode-selector">
+        <h3>¿Qué deseas hacer?</h3>
+        <div class="mode-options">
+          <label class="mode-option">
+            <input type="radio" formControlName="mode" value="new">
+            <span><span class="material-icons icon-new">note_add</span> Crear nuevo producto</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" formControlName="mode" value="existing">
+            <span><span class="material-icons icon-new">add_circle</span> Agregar costos a producto existente</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Información del producto -->
+      <h3>Información del Producto</h3>
+      
+      <div class="form-group">
+        <label for="businessId">Negocio *</label>
+        <select id="businessId" class="form-control" formControlName="businessId">
+          <option value="">Selecciona un negocio</option>
+          <option *ngFor="let business of businesses" [value]="business.id">
+            {{ business.name }}
+          </option>
+        </select>
+        <small *ngIf="businesses.length === 0" class="text-muted">
+          <a routerLink="/dashboard">Crea un negocio primero</a>
+        </small>
+      </div>
+
+      <!-- Selector de producto existente -->
+      <div class="form-group" *ngIf="mode === 'existing'">
+        <label for="existingProductId">Seleccionar Producto *</label>
+        <select 
+          id="existingProductId" 
+          class="form-control" 
+          formControlName="existingProductId"
+          (change)="onProductSelect($event)">
+          <option value="">Selecciona un producto</option>
+          <option *ngFor="let product of getProductsByBusiness()" [value]="product.id">
+            {{ product.name }}
+          </option>
+        </select>
+        <small *ngIf="getProductsByBusiness().length === 0 && calculatorForm.get('businessId')?.value" class="text-muted">
+          No hay productos en este negocio. Cambia a "Crear nuevo producto".
+        </small>
+      </div>
+
+      <!-- Información del producto seleccionado -->
+      <div class="product-info-card" *ngIf="mode === 'existing' && selectedProduct">
+        <h4>{{ selectedProduct.name }}</h4>
+        <p *ngIf="selectedProduct.description">{{ selectedProduct.description }}</p>
+        <p><strong>Margen actual:</strong> {{ selectedProduct.targetMargin }}%</p>
+        
+        <!-- Costos existentes -->
+        <div class="existing-costs" *ngIf="existingCosts.length > 0">
+          <h5>Costos Actuales:</h5>
+          <div class="existing-cost-item" *ngFor="let cost of existingCosts">
+            <div class="cost-details">
+              <strong>{{ cost.name }}</strong>
+              <span class="cost-type">{{ costTypeLabels[cost.type] }}</span>
+              <span class="cost-value">${{ cost.value | number:'1.2-2' }}</span>
+            </div>
+            <button type="button" class="btn-delete-cost" (click)="deleteExistingCost(cost.id)">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campos para nuevo producto -->
+      <div *ngIf="mode === 'new'">
+        <div class="form-group">
+          <label for="productName">Nombre del Producto *</label>
+          <input 
+            type="text" 
+            id="productName"
+            class="form-control" 
+            formControlName="productName"
+            placeholder="Ej: Pastel de Chocolate">
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription">Descripción (opcional)</label>
+          <textarea 
+            id="productDescription"
+            class="form-control" 
+            formControlName="productDescription"
+            rows="2"
+            placeholder="Breve descripción del producto"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="expectedMonthlyUnits">
+            Unidades Esperadas por Mes *
+            <span class="material-icons info-icon" title="Cuántas unidades de este producto esperas vender mensualmente">info</span>
+          </label>
+          <input 
+            type="number" 
+            id="expectedMonthlyUnits"
+            class="form-control" 
+            formControlName="expectedMonthlyUnits"
+            min="1"
+            step="1"
+            placeholder="Ej: 100">
+          <small class="text-muted">
+            Los costos fijos del negocio se distribuirán proporcionalmente según estas unidades
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="targetMargin">Margen de Ganancia Objetivo (%) *</label>
+        <input 
+          type="number" 
+          id="targetMargin"
+          class="form-control" 
+          formControlName="targetMargin"
+          min="0"
+          step="1">
+        <small class="text-muted">El porcentaje de ganancia que deseas obtener</small>
+      </div>
+
+      <!-- Lista de costos -->
+      <div class="costs-section">
+        <div class="section-header">
+          <h3>{{ mode === 'new' ? 'Costos del Producto' : 'Agregar Nuevos Costos' }}</h3>
+          <button type="button" class="btn btn-primary" (click)="addCost()">
+            + Agregar Costo
+          </button>
+        </div>
+
+        <div formArrayName="costs" class="costs-list">
+          <div *ngFor="let cost of costs.controls; let i = index" 
+               [formGroupName]="i" 
+               class="cost-item">
+            <div class="cost-header">
+              <span class="cost-number">Costo #{{ i + 1 }}</span>
+              <button 
+                type="button" 
+                class="btn-remove"
+                (click)="removeCost(i)"
+                *ngIf="costs.length > 1">
+                ✕
+              </button>
+            </div>
+
+            <div class="cost-fields">
+              <div class="form-group">
+                <label>Nombre del Costo</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  formControlName="name"
+                  placeholder="Ej: Harina, Envases">
+              </div>
+
+              <div class="form-group">
+                <label>Tipo de Costo</label>
+                <select class="form-control" formControlName="type">
+                  <option value="variable">Costo Variable (materiales, insumos)</option>
+                  <option value="labor">Mano de Obra Directa</option>
+                  <option value="overhead">Gasto General</option>
+                  <option value="tax">Impuesto</option>
+                  <option value="shipping">Envío/Logística</option>
+                </select>
+                <small class="text-muted">
+                  Los costos fijos del negocio (alquiler, servicios) se gestionan en el Dashboard
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label>Valor por Unidad ($)</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  formControlName="value"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00">
+              </div>
+
+              <div class="form-group form-group-full">
+                <label>Descripción (opcional)</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  formControlName="description"
+                  placeholder="Detalles adicionales">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div class="summary card-highlight">
+        <h4>Resumen</h4>
+        <div class="summary-row">
+          <span>Total de Costos:</span>
+          <strong>${{ calculateTotal() | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Margen Objetivo:</span>
+          <strong>{{ calculatorForm.get('targetMargin')?.value }}%</strong>
+        </div>
+        <div class="summary-row price-row">
+          <span>Precio Sugerido:</span>
+          <strong class="price">${{ calculateSuggestedPrice() | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-success"
+          [disabled]="calculatorForm.invalid">
+          Guardar Producto
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="resetForm()">
+          Limpiar
+        </button>
+      </div>
+    </form>
+
+    <!-- Panel lateral informativo -->
+    <div class="info-panel">
+      <div class="card">
+        <h4>📚 Tipos de Costos</h4>
+        <div class="info-item">
+          <strong>Costos Fijos:</strong>
+          <p>No varían con la producción. <strong>IMPORTANTE:</strong> Si son mensuales (alquiler, servicios), especifica cuántas unidades esperas producir al mes para calcular el costo por unidad.</p>
+        </div>
+        <div class="info-item">
+          <strong>Costos Variables:</strong>
+          <p>Cambian según la cantidad producida (materias primas por unidad)</p>
+        </div>
+        <div class="info-item">
+          <strong>Mano de Obra:</strong>
+          <p>Costo del trabajo directo en la producción por unidad</p>
+        </div>
+        <div class="info-item">
+          <strong>Gastos Generales:</strong>
+          <p>Costos indirectos de operación relacionados al producto</p>
+        </div>
+        <div class="info-item">
+          <strong>Impuestos:</strong>
+          <p>Tributos y tasas relacionadas al producto</p>
+        </div>
+        <div class="info-item">
+          <strong>Envío/Logística:</strong>
+          <p>Costos de transporte y distribución por unidad</p>
+        </div>
+      </div>
+
+      <div class="card highlight-card">
+        <h4><span class="material-icons icon-tip">info</span> Sobre los Costos Fijos del Negocio</h4>
+        <p>
+          Los costos fijos como <strong>alquiler, servicios, salarios administrativos</strong> se pagan 
+          una vez al mes para todo el negocio, no por producto.
+        </p>
+        <p>
+          Gestiόnalos desde el <a routerLink="/dashboard" style="text-decoration: underline; font-weight: bold;">Dashboard</a> 
+          y se distribuirán automáticamente entre todos tus productos.
+        </p>
+        <p class="warning-text">
+          <span class="material-icons icon-warning">warning</span> 
+          No agregues costos fijos aquí, ya que se contarían múltiples veces
+        </p>
+      </div>
+
+      <div class="card">
+        <h4><span class="material-icons icon-tip">tips_and_updates</span> Consejos</h4>
+        <ul>
+          <li>Incluye TODOS los costos directos del producto</li>
+          <li>Considera materiales, insumos, mano de obra directa</li>
+          <li>No olvides los costos ocultos (mermas, desperdicios)</li>
+          <li>Los costos fijos del negocio se gestionan desde el Dashboard</li>
+          <li>Revisa tus costos periódicamente</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

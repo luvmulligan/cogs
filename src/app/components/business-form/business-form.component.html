@@ -1,0 +1,51 @@
+<div class="card business-form">
+  <h3>Crear Nuevo Negocio</h3>
+  
+  <form [formGroup]="businessForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Nombre del Negocio *</label>
+      <input 
+        type="text" 
+        id="name"
+        class="form-control" 
+        formControlName="name"
+        placeholder="Ej: Mi Panadería">
+      <small class="error" *ngIf="businessForm.get('name')?.invalid && businessForm.get('name')?.touched">
+        El nombre es requerido (mínimo 3 caracteres)
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="industry">Rubro *</label>
+      <select 
+        id="industry"
+        class="form-control" 
+        formControlName="industry">
+        <option value="">Selecciona un rubro</option>
+        <option *ngFor="let industry of industries" [value]="industry">
+          {{ industry }}
+        </option>
+      </select>
+      <small class="error" *ngIf="businessForm.get('industry')?.invalid && businessForm.get('industry')?.touched">
+        El rubro es requerido
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción (opcional)</label>
+      <textarea 
+        id="description"
+        class="form-control" 
+        formControlName="description"
+        rows="3"
+        placeholder="Describe tu negocio"></textarea>
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn btn-success"
+      [disabled]="businessForm.invalid">
+      Crear Negocio
+    </button>
+  </form>
+</div>

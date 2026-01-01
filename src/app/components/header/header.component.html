@@ -1,0 +1,31 @@
+<header class="header">
+  <div class="header-container">
+    <div class="logo">
+      <h1><span class="material-icons">settings_applications</span> AppCogs</h1>
+      <span class="subtitle">Gestión de Costos</span>
+    </div>
+    
+    <nav class="nav">
+      <a routerLink="/dashboard" 
+         class="nav-link" 
+         [class.active]="isActive('/dashboard')">
+        <span class="material-icons">dashboard</span> Dashboard
+      </a>
+      <a routerLink="/calculator" 
+         class="nav-link" 
+         [class.active]="isActive('/calculator')">
+        <span class="material-icons">calculate</span> Calculadora
+      </a>
+      <a routerLink="/analysis" 
+         class="nav-link" 
+         [class.active]="isActive('/analysis')">
+        <span class="material-icons">data_thresholding</span> Análisis
+      </a>
+      <a routerLink="/education" 
+         class="nav-link" 
+         [class.active]="isActive('/education')">
+        <span class="material-icons">menu_book</span> Aprende
+      </a>
+    </nav>
+  </div>
+</header>

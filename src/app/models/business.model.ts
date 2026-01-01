@@ -1,0 +1,82 @@
+// Modelos de datos para la aplicación
+
+export interface Business {
+  id: string;
+  name: string;
+  industry: string;
+  description?: string;
+  createdAt: Date;
+  expectedMonthlyUnits?: number; // Total de unidades esperadas al mes (todos los productos)
+}
+
+export interface Product {
+  id: string;
+  businessId: string;
+  name: string;
+  description?: string;
+  targetMargin: number; // Margen de ganancia objetivo en porcentaje
+  expectedMonthlyUnits?: number; // Unidades esperadas de este producto específico
+}
+
+// Costos fijos a nivel de negocio (alquiler, servicios, salarios administrativos)
+export interface BusinessFixedCost {
+  id: string;
+  businessId: string;
+  name: string;
+  type: CostType;
+  monthlyValue: number; // Valor mensual del costo fijo
+  description?: string;
+}
+
+// Costos directos/variables a nivel de producto
+export interface Cost {
+  id: string;
+  productId: string;
+  name: string;
+  type: CostType;
+  value: number;
+  isPercentage: boolean; // Si es porcentaje del precio o valor fijo
+  description?: string;
+}
+
+export enum CostType {
+  FIXED = 'fixed',           // Costos fijos del negocio (alquiler, servicios)
+  VARIABLE = 'variable',     // Costos variables por producto (materiales, insumos)
+  LABOR = 'labor',          // Mano de obra directa
+  OVERHEAD = 'overhead',    // Gastos generales
+  TAX = 'tax',             // Impuestos
+  SHIPPING = 'shipping'    // Envío/logística
+}
+
+export interface PriceAnalysis {
+  productId: string;
+  totalCosts: number;
+  directCosts: number;        // Costos directos del producto
+  allocatedFixedCosts: number; // Porción de costos fijos del negocio asignados a este producto
+  variableCosts: number;
+  suggestedPrice: number;
+  minimumPrice: number;
+  targetPrice: number;
+  profitMargin: number;
+  profitMarginPercent: number;
+  breakEvenUnits: number;
+  fixedCostsPercent?: number;
+}
+
+export interface EducationalContent {
+  id: string;
+  title: string;
+  category: EducationCategory;
+  content: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimatedTime: number; // minutos
+}
+
+export enum EducationCategory {
+  FIXED_COSTS = 'fixed_costs',
+  VARIABLE_COSTS = 'variable_costs',
+  PRICING = 'pricing',
+  PROFIT_MARGIN = 'profit_margin',
+  BREAK_EVEN = 'break_even',
+  CASH_FLOW = 'cash_flow'
+}

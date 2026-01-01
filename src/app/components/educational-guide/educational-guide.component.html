@@ -1,0 +1,107 @@
+<div class="container">
+  <div class="education-header">
+    <h2><span class="material-icons">menu_book</span> Centro de Aprendizaje</h2>
+    <p class="subtitle">Aprende sobre gestión financiera y costos para tu negocio</p>
+  </div>
+
+  <!-- Vista de lista -->
+  <div *ngIf="!selectedContent" class="content-list">
+    
+    <!-- Filtros -->
+    <div class="filters card">
+      <div class="filter-group">
+        <label for="category">Filtrar por tema:</label>
+        <select 
+          id="category"
+          class="form-control" 
+          [(ngModel)]="selectedCategory"
+          (change)="onCategoryChange($event)">
+          <option *ngFor="let cat of categories" [value]="cat.value">
+            {{ cat.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="difficulty">Filtrar por nivel:</label>
+        <select 
+          id="difficulty"
+          class="form-control" 
+          [(ngModel)]="selectedDifficulty"
+          (change)="onDifficultyChange($event)">
+          <option *ngFor="let diff of difficulties" [value]="diff.value">
+            {{ diff.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Lista de contenidos -->
+    <div class="contents-grid">
+      <div 
+        *ngFor="let content of filteredContents"
+        class="content-card card"
+        (click)="selectContent(content)">
+        
+        <div class="content-header">
+          <span class="difficulty-badge" [class]="content.difficulty">
+            {{ getDifficultyIcon(content.difficulty) }}
+            {{ getDifficultyLabel(content.difficulty) }}
+          </span>
+          <span class="time-badge"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">schedule</span> {{ content.estimatedTime }} min</span>
+        </div>
+
+        <h3>{{ content.title }}</h3>
+        
+        <div class="content-footer">
+          <span class="category-tag">
+            {{ getCategoryLabel(content.category) }}
+          </span>
+          <span class="read-more">Leer más →</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredContents.length === 0" class="empty-state card">
+      <p>No se encontraron guías con los filtros seleccionados.</p>
+    </div>
+  </div>
+
+  <!-- Vista de detalle -->
+  <div *ngIf="selectedContent" class="content-detail">
+    
+    <button class="btn-back" (click)="backToList()">
+      ← Volver a la lista
+    </button>
+
+    <div class="card detail-card">
+      <div class="detail-header">
+        <h1>{{ selectedContent.title }}</h1>
+        
+        <div class="detail-meta">
+          <span class="difficulty-badge" [class]="selectedContent.difficulty">
+            {{ getDifficultyIcon(selectedContent.difficulty) }}
+            {{ getDifficultyLabel(selectedContent.difficulty) }}
+          </span>
+          <span class="time-badge"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">schedule</span> {{ selectedContent.estimatedTime }} minutos</span>
+          <span class="category-tag">
+            {{ getCategoryLabel(selectedContent.category) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="detail-content" [innerHTML]="selectedContent.content"></div>
+    </div>
+
+    <!-- Navegación entre contenidos -->
+    <div class="navigation-buttons">
+      <button 
+        *ngFor="let content of allContents"
+        [class.active]="content.id === selectedContent.id"
+        class="nav-button"
+        (click)="selectContent(content)">
+        {{ content.title }}
+      </button>
+    </div>
+  </div>
+</div>

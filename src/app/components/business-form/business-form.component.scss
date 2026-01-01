@@ -1,0 +1,30 @@
+.business-form {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  
+  h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+  }
+  
+  .error {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    display: block;
+    margin-top: 0.25rem;
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+  font-family: inherit;
+}

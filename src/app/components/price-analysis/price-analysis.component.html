@@ -1,0 +1,229 @@
+<div class="container">
+  <h2><span class="material-icons">data_thresholding</span> Análisis de Precios</h2>
+
+  <!-- Selector de producto -->
+  <div class="product-selector card">
+    <h3>Selecciona un Producto para Analizar</h3>
+    
+    <div class="products-grid" *ngIf="products.length > 0">
+      <button 
+        *ngFor="let product of products"
+        class="product-card"
+        [class.selected]="selectedProduct?.id === product.id"
+        (click)="selectProduct(product)">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-margin">Margen objetivo: {{ product.targetMargin }}%</div>
+      </button>
+    </div>
+
+    <div class="empty-state" *ngIf="products.length === 0">
+      <p>No hay productos registrados aún.</p>
+      <a routerLink="/calculator" class="btn btn-primary">Crear Primer Producto</a>
+    </div>
+  </div>
+
+  <!-- Análisis detallado -->
+  <div *ngIf="selectedProduct && analysis" class="analysis-container">
+    
+    <!-- Información general -->
+    <div class="card product-info">
+      <h3>{{ selectedProduct.name }}</h3>
+      <p *ngIf="selectedProduct.description">{{ selectedProduct.description }}</p>
+      <span class="badge">Margen Objetivo: {{ selectedProduct.targetMargin }}%</span>
+      
+      <!-- Debug info -->
+      <div class="debug-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2);">
+        <details>
+          <summary style="cursor: pointer; opacity: 0.7;"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">bug_report</span> Ver información de debug</summary>
+          <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 4px; margin-top: 0.5rem;">
+            <p><strong>Total de costos cargados:</strong> {{ costs.length }}</p>
+            <p><strong>Abre la consola del navegador (F12)</strong> para ver logs detallados</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Métricas principales -->
+    <div class="metrics-grid grid grid-3">
+      <div class="metric-card card">
+        <div class="metric-label">Costos Totales</div>
+        <div class="metric-value">${{ analysis.totalCosts | number:'1.2-2' }}</div>
+        <div class="metric-breakdown">
+          <small>Directos: ${{ analysis.directCosts | number:'1.2-2' }}</small>
+          <small>Fijos asignados: ${{ analysis.allocatedFixedCosts | number:'1.2-2' }}</small>
+        </div>
+      </div>
+
+      <div class="metric-card card highlight">
+        <div class="metric-label">Precio Sugerido</div>
+        <div class="metric-value price">${{ analysis.suggestedPrice | number:'1.2-2' }}</div>
+        <small>Incluye margen objetivo + buffer</small>
+      </div>
+
+      <div class="metric-card card">
+        <div class="metric-label">Margen de Ganancia</div>
+        <div class="metric-value">{{ analysis.profitMarginPercent | number:'1.1-1' }}%</div>
+        <small>${{ analysis.profitMargin | number:'1.2-2' }} por unidad</small>
+      </div>
+    </div>
+
+    <!-- Info sobre costos fijos del negocio -->
+    <div class="card fixed-costs-info" *ngIf="businessFixedCosts.length > 0">
+      <h4><span class="material-icons">account_balance</span> Distribución de Costos Fijos del Negocio</h4>
+      <p class="info-text">
+        Los costos fijos de tu negocio se distribuyen proporcionalmente entre todos tus productos. 
+        Este producto absorbe <strong>${{ analysis.allocatedFixedCosts | number:'1.2-2' }}</strong> por unidad.
+      </p>
+      <div class="fixed-costs-summary">
+        <div class="summary-item">
+          <span>Total costos fijos del negocio (mensual):</span>
+          <strong>${{ getTotalBusinessFixedCosts() | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-item" *ngIf="selectedProduct.expectedMonthlyUnits">
+          <span>Unidades esperadas de este producto:</span>
+          <strong>{{ selectedProduct.expectedMonthlyUnits }}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Porcentaje de costos fijos:</span>
+          <strong>{{ analysis.fixedCostsPercent | number:'1.1-1' }}% del costo total</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rangos de precio -->
+    <div class="card price-ranges">
+      <h4>Rangos de Precio Recomendados</h4>
+      
+      <div class="range-item">
+        <div class="range-header">
+          <span class="range-label">🔴 Precio Mínimo</span>
+          <span class="range-value">${{ analysis.minimumPrice | number:'1.2-2' }}</span>
+        </div>
+        <div class="range-bar">
+          <div class="range-fill danger" [style.width.%]="33"></div>
+        </div>
+        <small>No vender por debajo de este precio (cubre solo costos)</small>
+      </div>
+
+      <div class="range-item">
+        <div class="range-header">
+          <span class="range-label">🟡 Precio Objetivo</span>
+          <span class="range-value">${{ analysis.targetPrice | number:'1.2-2' }}</span>
+        </div>
+        <div class="range-bar">
+          <div class="range-fill warning" [style.width.%]="66"></div>
+        </div>
+        <small>Precio con tu margen objetivo ({{ selectedProduct.targetMargin }}%)</small>
+      </div>
+
+      <div class="range-item">
+        <div class="range-header">
+          <span class="range-label">🟢 Precio Sugerido</span>
+          <span class="range-value">${{ analysis.suggestedPrice | number:'1.2-2' }}</span>
+        </div>
+        <div class="range-bar">
+          <div class="range-fill success" [style.width.%]="100"></div>
+        </div>
+        <small>Precio recomendado con margen de seguridad</small>
+      </div>
+    </div>
+
+    <!-- Desglose de costos -->
+    <div class="card costs-breakdown">
+      <h4>Desglose de Costos por Tipo</h4>
+      
+      <div class="empty-costs" *ngIf="costs.length === 0">
+        <p><span class="material-icons icon-warning">warning</span> Este producto no tiene costos registrados aún.</p>
+        <a routerLink="/calculator" class="btn btn-primary">Agregar Costos</a>
+      </div>
+      
+      <div *ngIf="costs.length > 0">
+        <div class="cost-items">
+          <div *ngFor="let key of getCostTypeKeys()" class="cost-breakdown-item">
+            <div class="cost-info">
+              <span class="cost-type">{{ costTypeLabels[key] }}</span>
+              <span class="cost-amount">${{ costsByType[key] | number:'1.2-2' }}</span>
+            </div>
+            <div class="cost-bar">
+              <div class="cost-fill" 
+                   [style.width.%]="getCostPercentage(costsByType[key])"
+                   [style.background]="getMarginColor(getCostPercentage(costsByType[key]))">
+              </div>
+            </div>
+            <small>{{ getCostPercentage(costsByType[key]) | number:'1.1-1' }}% de los costos directos</small>
+          </div>
+        </div>
+
+      
+        <div class="costs-list">
+          <h5>Costos Directos del Producto</h5>
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Valor por Unidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cost of costs">
+                <td>{{ cost.name }}</td>
+                <td>{{ costTypeLabels[cost.type] }}</td>
+                <td>${{ cost.value | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simulación de escenarios -->
+    <div class="card scenarios">
+      <h4>Simulación de Escenarios de Precio</h4>
+      <p class="subtitle">Explora diferentes márgenes de ganancia y sus resultados</p>
+      
+      <div class="scenarios-grid">
+        <div *ngFor="let scenario of scenarios" 
+             class="scenario-card"
+             [class.recommended]="scenario.margin === selectedProduct.targetMargin">
+          <div class="scenario-header">
+            <span class="scenario-margin">{{ scenario.margin }}%</span>
+            <span class="recommended-badge" *ngIf="scenario.margin === selectedProduct.targetMargin">
+              ⭐ Tu objetivo
+            </span>
+          </div>
+          <div class="scenario-price">${{ scenario.price | number:'1.2-2' }}</div>
+          <div class="scenario-profit">
+            Ganancia: ${{ scenario.profit | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consejos personalizados -->
+    <div class="card tips">
+      <h4><span class="material-icons icon-tip">lightbulb</span> Recomendaciones para Este Producto</h4>
+      <ul>
+        <li *ngIf="analysis.profitMarginPercent < 20">
+          <span class="material-icons icon-warning">warning</span> Tu margen es bajo. Considera reducir costos o aumentar el precio.
+        </li>
+        <li *ngIf="analysis.breakEvenUnits > 100">
+          <span class="material-icons icon-warning">warning</span> Necesitas vender muchas unidades para ser rentable. Evalúa reducir costos fijos.
+        </li>
+        <li *ngIf="analysis.allocatedFixedCosts > analysis.directCosts">
+          <span class="material-icons icon-tip">info</span> Tus costos fijos asignados son altos. Busca formas de reducirlos o aumenta el volumen de ventas.
+        </li>
+        <li *ngIf="analysis.profitMarginPercent >= 30 && analysis.profitMarginPercent < 50">
+          <span class="material-icons icon-success">check_circle</span> Tu margen es saludable. Mantén un ojo en tus costos para preservarlo.
+        </li>
+        <li *ngIf="analysis.profitMarginPercent >= 50">
+          <span class="material-icons icon-success">stars</span> Excelente margen de ganancia. Asegúrate de que el precio sea competitivo en tu mercado.
+        </li>
+        <li *ngIf="analysis.breakEvenUnits > 0">
+          <span class="material-icons icon-chart">bar_chart</span> Para alcanzar el punto de equilibrio, necesitas vender {{ analysis.breakEvenUnits }} unidades al mes
+          ({{ (analysis.breakEvenUnits / 30) | number:'1.0-0' }} por día aproximadamente).
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
