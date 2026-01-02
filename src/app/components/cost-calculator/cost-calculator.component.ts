@@ -150,14 +150,14 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.calculatorForm.valid) {
       const formValue = this.calculatorForm.value;
       let product: Product;
       
       if (this.mode === 'new') {
         // Crear nuevo producto
-        product = this.businessService.addProduct({
+        product = await this.businessService.addProduct({
           businessId: formValue.businessId,
           name: formValue.productName,
           description: formValue.productDescription,
@@ -170,14 +170,14 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
         
         // Actualizar margen si cambió
         if (formValue.targetMargin !== product.targetMargin) {
-          this.businessService.updateProduct(product.id, {
+          await this.businessService.updateProduct(product.id, {
             targetMargin: formValue.targetMargin
           });
         }
       }
 
       // Agregar nuevos costos
-      formValue.costs.forEach((cost: any) => {
+      for (const cost of formValue.costs) {
         if (cost.name && cost.value > 0) {
           const costData = {
             productId: product.id,
@@ -187,9 +187,9 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
             isPercentage: false,
             description: cost.description
           };
-          this.businessService.addCost(costData);
+          await this.businessService.addCost(costData);
         }
-      });
+      }
 
       const message = this.mode === 'new' 
         ? '✓ Producto y costos guardados exitosamente!'
