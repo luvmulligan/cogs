@@ -1,4 +1,24 @@
 <app-header></app-header>
+
+<!-- Banner de migración -->
+<div *ngIf="showMigrationPrompt" class="migration-banner">
+  <div class="migration-content">
+    <span class="material-icons">cloud_upload</span>
+    <div class="migration-text">
+      <strong>Migración a Firebase disponible</strong>
+      <p>Detectamos datos guardados localmente. ¿Deseas migrarlos a la nube?</p>
+    </div>
+    <div class="migration-actions">
+      <button class="btn btn-primary" (click)="migrateData()" [disabled]="migrating">
+        {{ migrating ? 'Migrando...' : 'Migrar Ahora' }}
+      </button>
+      <button class="btn btn-secondary" (click)="dismissMigration()" [disabled]="migrating">
+        Más Tarde
+      </button>
+    </div>
+  </div>
+</div>
+
 <main>
   <router-outlet></router-outlet>
 </main>
