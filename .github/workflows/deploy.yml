@@ -65,11 +65,21 @@ jobs:
     - name: Build
       run: npm run build:prod
       
-    - name: Copy index.html to 404.html for SPA routing
-      run: cp dist/app-cogs/index.html dist/app-cogs/404.html
+    - name: List build output
+      run: ls -la dist/app-cogs/
       
-    - name: Add .nojekyll file
-      run: touch dist/app-cogs/.nojekyll
+    - name: Copy index.html to 404.html for SPA routing
+      run: |
+        if [ -f dist/app-cogs/browser/index.html ]; then
+          cp dist/app-cogs/browser/index.html dist/app-cogs/browser/404.html
+          touch dist/app-cogs/browser/.nojekyll
+          BUILD_PATH="dist/app-cogs/browser"
+        else
+          cp dist/app-cogs/index.html dist/app-cogs/404.html
+          touch dist/app-cogs/.nojekyll
+          BUILD_PATH="dist/app-cogs"
+        fi
+        echo "BUILD_PATH=$BUILD_PATH" >> $GITHUB_ENV
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -77,7 +87,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: 'dist/app-cogs'
+        path: ${{ env.BUILD_PATH }}
 
   deploy:
     environment:
