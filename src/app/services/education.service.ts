@@ -50,9 +50,9 @@ export class EducationService {
         
         <h4>Método 1: Distribución Simple por Volumen</h4>
         <p>Divide tus costos fijos mensuales entre las unidades que esperas vender/producir:</p>
-        <pre>
+        <code>
 Costo Fijo por Unidad = Costos Fijos Mensuales / Unidades Esperadas al Mes
-        </pre>
+        </code>
 
         <h4>Ejemplo Práctico - Panadería</h4>
         <p>Imagina que tienes estos costos fijos mensuales:</p>
@@ -64,9 +64,9 @@ Costo Fijo por Unidad = Costos Fijos Mensuales / Unidades Esperadas al Mes
         </ul>
 
         <p>Si produces <strong>2,000 panes al mes</strong>:</p>
-        <pre>
+        <code>
 Costo Fijo por Pan = $38,000 / 2,000 = $19 por pan
-        </pre>
+        </code>
 
         <h4>Método 2: Distribución por Producto (Múltiples Productos)</h4>
         <p>Si produces varios productos, distribuye según:</p>
@@ -77,11 +77,11 @@ Costo Fijo por Pan = $38,000 / 2,000 = $19 por pan
           <li>Producto B vende 600 unidades (30% del total)</li>
           <li>Producto C vende 400 unidades (20% del total)</li>
         </ul>
-        <pre>
+        <code>
 Costo Fijo Producto A = $38,000 × 50% / 1,000 = $19 por unidad
 Costo Fijo Producto B = $38,000 × 30% / 600 = $19 por unidad
 Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
-        </pre>
+        </code>
 
         <p><strong>Opción B - Por tiempo de producción:</strong></p>
         <p>Si un producto requiere más tiempo/recursos, asigna más costos fijos:</p>
@@ -94,7 +94,7 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
         
         <div class="tip">
           <strong><span class="material-icons icon-warning" style="font-size: 18px; vertical-align: middle;">warning</span> Cuidado con la Capacidad:</strong>
-          <p>Si produces menos unidades de las esperadas, cada unidad carga más costo fijo. Esto puede hacer que pierdas dinero incluso vendiendo al precio calculado.</p>
+          <p>Si produces menos unidades de las esperadas, cada unidad carga más costo fijo. Esto puede hacer que pierdas dinero incluso vendiendo al codecio calculado.</p>
         </div>
 
         <h4>Estrategia Recomendada</h4>
@@ -105,14 +105,14 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
           <li><strong>Mantén un margen de seguridad:</strong> Si calculas con 1,000 unidades pero solo vendes 800, pierdes dinero</li>
         </ol>
 
-        <h4>Ejemplo Completo de Precio</h4>
+        <h4>Ejemplo Completo de codecio</h4>
         <p><strong>Pastel de Chocolate:</strong></p>
         <ul>
           <li>Costos Variables (ingredientes, empaque): $50</li>
           <li>Costo Fijo por unidad (del cálculo anterior): $19</li>
           <li><strong>Costo Total: $69</strong></li>
           <li>Margen deseado: 40%</li>
-          <li><strong>Precio de Venta: $69 / (1 - 0.40) = $115</strong></li>
+          <li><strong>codecio de Venta: $69 / (1 - 0.40) = $115</strong></li>
         </ul>
 
         <div class="tip">
@@ -128,7 +128,7 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
 
         <h4>Errores Comunes</h4>
         <ul>
-          <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> No incluir costos fijos en el precio → Pierdes dinero con cada venta</li>
+          <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> No incluir costos fijos en el codecio → Pierdes dinero con cada venta</li>
           <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> Usar cifras demasiado optimistas de producción → El costo real será mayor</li>
           <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> No revisar y ajustar periódicamente → Los costos cambian con el tiempo</li>
           <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> Olvidar incluir tu propio salario → Tu tiempo también es un costo</li>
@@ -156,12 +156,12 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
 
         <h4>Cálculo del costo variable unitario</h4>
         <p>Para saber cuánto te cuesta producir cada unidad:</p>
-        <pre>Costo Variable Unitario = Costos Variables Totales / Unidades Producidas</pre>
+        <code>Costo Variable Unitario = Costos Variables Totales / Unidades Producidas</code>
 
         <h4>¿Por qué son importantes?</h4>
         <ul>
           <li>Determinan tu <strong>margen de contribución</strong></li>
-          <li>Te ayudan a calcular el precio mínimo de venta</li>
+          <li>Te ayudan a calcular el codecio mínimo de venta</li>
           <li>Permiten evaluar la rentabilidad de cada producto</li>
         </ul>
 
@@ -172,27 +172,27 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
     },
     {
       id: '4',
-      title: 'Establecer el Precio Correcto',
+      title: 'Establecer el codecio Correcto',
       category: EducationCategory.PRICING,
       difficulty: 'intermediate',
       estimatedTime: 8,
       content: `
-        <h3>Estrategias para fijar precios</h3>
-        <p>El precio de tu producto debe cubrir costos y generar ganancia, pero también considerar el mercado.</p>
+        <h3>Estrategias para fijar codecios</h3>
+        <p>El codecio de tu producto debe cubrir costos y generar ganancia, pero también considerar el mercado.</p>
         
-        <h4>1. Precio basado en costos</h4>
-        <pre>Precio = Costos Totales + Margen de Ganancia</pre>
+        <h4>1. codecio basado en costos</h4>
+        <code>codecio = Costos Totales + Margen de Ganancia</code>
         <p>Es el método más simple y asegura que cubras tus gastos.</p>
 
-        <h4>2. Precio basado en competencia</h4>
-        <p>Investiga qué precios maneja tu competencia y posiciónate estratégicamente:</p>
+        <h4>2. codecio basado en competencia</h4>
+        <p>Investiga qué codecios maneja tu competencia y posiciónate estratégicamente:</p>
         <ul>
-          <li><strong>Precio premium:</strong> Superior a la competencia (mayor calidad)</li>
-          <li><strong>Precio competitivo:</strong> Similar a la competencia</li>
-          <li><strong>Precio de penetración:</strong> Inferior para ganar mercado</li>
+          <li><strong>codecio codemium:</strong> Superior a la competencia (mayor calidad)</li>
+          <li><strong>codecio competitivo:</strong> Similar a la competencia</li>
+          <li><strong>codecio de penetración:</strong> Inferior para ganar mercado</li>
         </ul>
 
-        <h4>3. Precio basado en valor percibido</h4>
+        <h4>3. codecio basado en valor percibido</h4>
         <p>¿Cuánto está dispuesto a pagar el cliente por tu producto? Considera:</p>
         <ul>
           <li>Calidad del producto</li>
@@ -201,16 +201,16 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
           <li>Diferenciación frente a la competencia</li>
         </ul>
 
-        <h4>Errores comunes al fijar precios</h4>
+        <h4>Errores comunes al fijar codecios</h4>
         <ul>
           <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> No incluir TODOS los costos</li>
-          <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> Competir solo por precio bajo</li>
-          <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> No ajustar precios periódicamente</li>
+          <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> Competir solo por codecio bajo</li>
+          <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> No ajustar codecios periódicamente</li>
           <li><span class="material-icons icon-error" style="font-size: 16px; vertical-align: middle;">cancel</span> Ignorar el valor percibido</li>
         </ul>
 
         <div class="tip">
-          <strong><span class="material-icons icon-tip" style="font-size: 18px; vertical-align: middle;">lightbulb</span> Consejo:</strong> Calcula tres precios: el mínimo (punto de equilibrio), el objetivo (con tu margen deseado) y el óptimo (considerando el mercado).
+          <strong><span class="material-icons icon-tip" style="font-size: 18px; vertical-align: middle;">lightbulb</span> Consejo:</strong> Calcula tres codecios: el mínimo (punto de equilibrio), el objetivo (con tu margen deseado) y el óptimo (considerando el mercado).
         </div>
       `
     },
@@ -222,15 +222,15 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
       estimatedTime: 6,
       content: `
         <h3>¿Qué es el margen de ganancia?</h3>
-        <p>El margen de ganancia es el porcentaje de beneficio que obtienes sobre el precio de venta.</p>
+        <p>El margen de ganancia es el porcentaje de beneficio que obtienes sobre el codecio de venta.</p>
         
         <h4>Fórmula del margen de ganancia</h4>
-        <pre>Margen (%) = ((Precio - Costos) / Precio) × 100</pre>
+        <code>Margen (%) = ((codecio - Costos) / codecio) × 100</code>
 
         <h4>Tipos de márgenes</h4>
         <ul>
-          <li><strong>Margen bruto:</strong> Precio - Costos variables</li>
-          <li><strong>Margen neto:</strong> Precio - Todos los costos (fijos + variables)</li>
+          <li><strong>Margen bruto:</strong> codecio - Costos variables</li>
+          <li><strong>Margen neto:</strong> codecio - Todos los costos (fijos + variables)</li>
         </ul>
 
         <h4>Márgenes recomendados por industria</h4>
@@ -246,7 +246,7 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
         <ol>
           <li><strong>Reducir costos:</strong> Negocia con proveedores, optimiza procesos</li>
           <li><strong>Aumentar valor:</strong> Mejora calidad, branding, experiencia</li>
-          <li><strong>Ajustar precios:</strong> Aumentos graduales basados en valor</li>
+          <li><strong>Ajustar codecios:</strong> Aumentos graduales basados en valor</li>
           <li><strong>Eliminar desperdicios:</strong> Reduce mermas y pérdidas</li>
         </ol>
 
@@ -266,34 +266,34 @@ Costo Fijo Producto C = $38,000 × 20% / 400 = $19 por unidad
         <p>El punto de equilibrio es la cantidad de unidades que necesitas vender para cubrir todos tus costos, sin ganar ni perder dinero.</p>
         
         <h4>Fórmula del punto de equilibrio</h4>
-        <pre>Unidades = Costos Fijos / (Precio - Costo Variable Unitario)</pre>
+        <code>Unidades = Costos Fijos / (codecio - Costo Variable Unitario)</code>
 
         <h4>Ejemplo práctico</h4>
         <p>Imagina que vendes pasteles:</p>
         <ul>
           <li>Costos fijos mensuales: $10,000 (alquiler, salarios, servicios)</li>
           <li>Costo variable por pastel: $50 (ingredientes, empaque)</li>
-          <li>Precio de venta: $150</li>
+          <li>codecio de venta: $150</li>
         </ul>
-        <pre>
+        <code>
 Punto de equilibrio = $10,000 / ($150 - $50)
                     = $10,000 / $100
                     = 100 pasteles al mes
-        </pre>
+        </code>
 
-        <h4>Interpretación</h4>
+        <h4>Intercodetación</h4>
         <p>Necesitas vender <strong>100 pasteles al mes</strong> para cubrir todos tus gastos. A partir del pastel 101, comienzas a generar ganancias.</p>
 
         <h4>¿Cómo reducir tu punto de equilibrio?</h4>
         <ol>
           <li><strong>Reducir costos fijos:</strong> Busca un local más económico, negocia contratos</li>
           <li><strong>Reducir costos variables:</strong> Compra al mayoreo, optimiza procesos</li>
-          <li><strong>Aumentar el precio:</strong> Si el mercado lo permite</li>
-          <li><strong>Mejorar el margen de contribución:</strong> Aumenta el precio o reduce costos variables</li>
+          <li><strong>Aumentar el codecio:</strong> Si el mercado lo permite</li>
+          <li><strong>Mejorar el margen de contribución:</strong> Aumenta el codecio o reduce costos variables</li>
         </ol>
 
         <h4>Análisis de escenarios</h4>
-        <p>Pregúntate:</p>
+        <p>codegúntate:</p>
         <ul>
           <li>¿Es realista vender esa cantidad mensual?</li>
           <li>¿Qué pasa si mis costos aumentan?</li>
@@ -322,7 +322,7 @@ Punto de equilibrio = $10,000 / ($150 - $50)
         </ul>
 
         <h4>Fórmula básica</h4>
-        <pre>Flujo de Caja = Entradas de Efectivo - Salidas de Efectivo</pre>
+        <code>Flujo de Caja = Entradas de Efectivo - Salidas de Efectivo</code>
 
         <h4>Tipos de flujo de caja</h4>
         <ol>
@@ -344,7 +344,7 @@ Punto de equilibrio = $10,000 / ($150 - $50)
         <ol>
           <li><strong>Acelera los cobros:</strong> Ofrece descuentos por pago anticipado</li>
           <li><strong>Retrasa los pagos:</strong> Negocia plazos más largos con proveedores</li>
-          <li><strong>Controla el inventario:</strong> No compres más de lo necesario</li>
+          <li><strong>Controla el inventario:</strong> No comcodes más de lo necesario</li>
           <li><strong>Reduce costos:</strong> Elimina gastos innecesarios</li>
           <li><strong>Planifica:</strong> Proyecta tus flujos futuros</li>
         </ol>
@@ -359,7 +359,7 @@ Punto de equilibrio = $10,000 / ($150 - $50)
         </ul>
 
         <div class="tip">
-          <strong><span class="material-icons icon-tip" style="font-size: 18px; vertical-align: middle;">lightbulb</span> Consejo:</strong> Mantén siempre un colchón de efectivo equivalente a 3-6 meses de costos fijos. Esto te protege ante imprevistos.
+          <strong><span class="material-icons icon-tip" style="font-size: 18px; vertical-align: middle;">lightbulb</span> Consejo:</strong> Mantén siemcode un colchón de efectivo equivalente a 3-6 meses de costos fijos. Esto te protege ante imcodevistos.
         </div>
       `
     }
@@ -387,7 +387,7 @@ Punto de equilibrio = $10,000 / ($150 - $50)
     const labels: { [key in EducationCategory]: string } = {
       [EducationCategory.FIXED_COSTS]: 'Costos Fijos',
       [EducationCategory.VARIABLE_COSTS]: 'Costos Variables',
-      [EducationCategory.PRICING]: 'Fijación de Precios',
+      [EducationCategory.PRICING]: 'Fijación de codecios',
       [EducationCategory.PROFIT_MARGIN]: 'Margen de Ganancia',
       [EducationCategory.BREAK_EVEN]: 'Punto de Equilibrio',
       [EducationCategory.CASH_FLOW]: 'Flujo de Caja'

@@ -137,9 +137,7 @@
       <div class="costs-section">
         <div class="section-header">
           <h3>{{ mode === 'new' ? 'Costos del Producto' : 'Agregar Nuevos Costos' }}</h3>
-          <button type="button" class="btn btn-primary" (click)="addCost()">
-            + Agregar Costo
-          </button>
+    
         </div>
 
         <div formArrayName="costs" class="costs-list">
@@ -203,21 +201,22 @@
             </div>
           </div>
         </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+        <button type="button" class="btn btn-primary btn-add-cost" (click)="addCost(true)">
+          + Agregar Costo
+        </button>
       </div>
-
-      <!-- Resumen -->
-      <div class="summary card-highlight">
         <h4>Resumen</h4>
         <div class="summary-row">
-          <span>Total de Costos:</span>
+          <span>Total de Costos: </span>
           <strong>${{ calculateTotal() | number:'1.2-2' }}</strong>
         </div>
         <div class="summary-row">
-          <span>Margen Objetivo:</span>
+          <span>Margen Objetivo: </span>
           <strong>{{ calculatorForm.get('targetMargin')?.value }}%</strong>
         </div>
         <div class="summary-row price-row">
-          <span>Precio Sugerido:</span>
+          <span>Precio Sugerido: </span>
           <strong class="price">${{ calculateSuggestedPrice() | number:'1.2-2' }}</strong>
         </div>
       </div>

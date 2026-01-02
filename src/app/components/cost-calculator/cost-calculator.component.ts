@@ -57,7 +57,7 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.push(businessSub, productsSub);
-    this.addCost(); // Agregar un costo inicial
+    // this.addCost(); // Agregar un costo inicial
     
     // Escuchar cambios en el modo
     this.calculatorForm.get('mode')?.valueChanges.subscribe(mode => {
@@ -124,7 +124,7 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  addCost(): void {
+  addCost(fromClick?:boolean): void {
     const costGroup = this.fb.group({
       name: ['', Validators.required],
       type: [CostType.VARIABLE, Validators.required],
@@ -133,6 +133,14 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     });
     
     this.costs.push(costGroup);
+    const addButton = document.querySelector('.btn-add-cost');
+    if(fromClick){
+    // Scroll al nuevo costo agregado
+    setTimeout(() => {
+      addButton?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    }
+
   }
 
   removeCost(index: number): void {

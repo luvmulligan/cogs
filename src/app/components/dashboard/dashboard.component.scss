@@ -446,7 +446,17 @@
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 0.75rem;
+    
+    .btn {
+      width: 100%;
+    }
+  }
+  
+  .business-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
   
   .stat-card {
@@ -465,5 +475,80 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+  
+  .business-info {
+    .business-header {
+      flex-direction: column;
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+  
+  .add-fixed-cost-form {
+    .form-inline {
+      flex-direction: column;
+      
+      .form-control {
+        width: 100%;
+        min-width: unset;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+  
+  .expense-chart-section {
+    .chart-container {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    canvas {
+      max-width: 280px;
+    }
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .dashboard-header {
+    margin-bottom: 1rem;
+    
+    h2 {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .stats-grid {
+    margin-bottom: 1rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+    
+    .stat-value {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .expense-chart-section {
+    .chart-container {
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    canvas {
+      max-width: 200px;
+    }
+  }
+  
+  .card {
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
 }
