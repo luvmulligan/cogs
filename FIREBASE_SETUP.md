@@ -20,14 +20,52 @@ Este proyecto usa Firebase como base de datos. Para configurarlo:
      ```
    - Reemplaza las credenciales con las de tu proyecto Firebase
 
-4. **Configura las reglas de Firestore:**
+4. **Habilita Google Authentication:**
+   - Ve a Firebase Console → **Authentication**
+   - Haz clic en la pestaña **Sign-in method**
+   - Habilita el proveedor **Google**
+   - En la sección "Dominios autorizados", asegúrate de que `localhost` y tu dominio de producción estén incluidos
+   - Si usas GitHub Pages, agrega: `tu-usuario.github.io`
+   - **IMPORTANTE**: Configura un correo de soporte del proyecto (requerido por Google)
+   - Guarda los cambios
+
+5. **Habilita Email/Password Authentication:**
+   - En la misma sección de **Sign-in method**
+   - Habilita el proveedor **Email/Password**
+   - No es necesario configurar nada adicional
+   - Guarda los cambios
+
+6. **Configura las reglas de Firestore:**
    - Ve a Firestore Database > Rules
    - Usa las reglas de desarrollo (ver documentación)
 
-5. **Ejecuta la aplicación:**
+7. **Ejecuta la aplicación:**
    ```bash
    npm start
    ```
+
+## Solución de Problemas
+
+### Error: CONFIGURATION_NOT_FOUND
+
+Si ves este error al intentar iniciar sesión con Google:
+
+1. **Verifica que Google esté habilitado:**
+   - Firebase Console → Authentication → Sign-in method
+   - El proveedor "Google" debe estar **Habilitado** (no solo agregado)
+
+2. **Configura el correo de soporte:**
+   - En la configuración de Google Sign-In
+   - Ingresa un email de soporte del proyecto (requerido)
+
+3. **Verifica dominios autorizados:**
+   - En Authentication → Settings → Authorized domains
+   - Debe incluir `localhost` para desarrollo
+   - Agrega tu dominio de producción si corresponde
+
+4. **Espera unos minutos:**
+   - Los cambios en Firebase pueden tardar 1-2 minutos en aplicarse
+   - Recarga la página después de habilitar Google Sign-In
 
 ## Seguridad
 

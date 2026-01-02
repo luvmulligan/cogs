@@ -20,6 +20,20 @@ export class LoginComponent {
     private router: Router
   ) {}
 
+  async loginWithGoogle(): Promise<void> {
+    this.loading = true;
+    this.errorMessage = '';
+
+    try {
+      await this.authService.loginWithGoogle();
+      this.router.navigate(['/dashboard']);
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Error al autenticar con Google';
+    } finally {
+      this.loading = false;
+    }
+  }
+
   async onSubmit(): Promise<void> {
     if (!this.email || !this.password) {
       this.errorMessage = 'Por favor completa todos los campos';
@@ -46,5 +60,7 @@ export class LoginComponent {
   toggleMode(): void {
     this.isRegisterMode = !this.isRegisterMode;
     this.errorMessage = '';
+    this.email = '';
+    this.password = '';
   }
 }
