@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>COGS</h1>
+      <p>{{ isRegisterMode ? 'Crear cuenta' : 'Iniciar sesión' }}</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="tu@email.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Procesando...' : (isRegisterMode ? 'Registrarse' : 'Iniciar sesión') }}
+      </button>
+
+      <div class="toggle-mode">
+        <span>{{ isRegisterMode ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?' }}</span>
+        <button type="button" class="btn-link" (click)="toggleMode()">
+          {{ isRegisterMode ? 'Iniciar sesión' : 'Registrarse' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -15,6 +16,7 @@ import { EducationalGuideComponent } from './components/educational-guide/educat
 import { BusinessFormComponent } from './components/business-form/business-form.component';
 import { ProductFormComponent } from './components/product-form/product-form.component';
 import { HeaderComponent } from './components/header/header.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { HeaderComponent } from './components/header/header.component';
     EducationalGuideComponent,
     BusinessFormComponent,
     ProductFormComponent,
-    HeaderComponent
+    HeaderComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +39,8 @@ import { HeaderComponent } from './components/header/header.component';
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
+    provideAuth(() => getAuth())
   ],
   bootstrap: [AppComponent]
 })

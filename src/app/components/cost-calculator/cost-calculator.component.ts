@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { BusinessService } from '../../services/business.service';
+import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
 import { Business, Product, CostType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
@@ -33,7 +33,7 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private businessService: BusinessService,
+    private businessService: FirebaseBusinessService,
     private pricingService: PricingService
   ) {
     this.calculatorForm = this.fb.group({

@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BusinessService } from '../../services/business.service';
+import { FirebaseBusinessService } from '../../services/firebase-business.service';
 
 @Component({
     selector: 'app-business-form',
@@ -27,7 +27,7 @@ export class BusinessFormComponent {
 
   constructor(
     private fb: FormBuilder,
-    private businessService: BusinessService
+    private businessService: FirebaseBusinessService
   ) {
     this.businessForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],

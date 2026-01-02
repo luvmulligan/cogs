@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { BusinessService } from '../../services/business.service';
+import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
 import { Product, PriceAnalysis, Cost, CostType, BusinessFixedCost, Business } from '../../models/business.model';
 import { Subscription } from 'rxjs';
@@ -31,7 +31,7 @@ export class PriceAnalysisComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private businessService: BusinessService,
+    private businessService: FirebaseBusinessService,
     private pricingService: PricingService
   ) {}
 

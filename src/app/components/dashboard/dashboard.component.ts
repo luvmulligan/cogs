@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { BusinessService } from '../../services/business.service';
+import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
 import { Business, Product, BusinessFixedCost, CostType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('expenseChart', { static: false }) expenseChartRef?: ElementRef<HTMLCanvasElement>;
 
   constructor(
-    private businessService: BusinessService,
+    private businessService: FirebaseBusinessService,
     private pricingService: PricingService
   ) {}
 

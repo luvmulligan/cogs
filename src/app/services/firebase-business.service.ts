@@ -11,6 +11,7 @@ import {
   where,
   addDoc
 } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Business, Product, Cost, BusinessFixedCost } from '../models/business.model';
@@ -29,41 +30,63 @@ export class FirebaseBusinessService {
   costs$ = this.costsSubject.asObservable();
   businessFixedCosts$ = this.businessFixedCostsSubject.asObservable();
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore,
+    private auth: Auth
+  ) {
     this.loadData();
   }
 
   private loadData(): void {
-    // Load businesses
-    const businessesRef = collection(this.firestore, 'businesses');
-    collectionData(businessesRef, { idField: 'id' }).subscribe((businesses: any[]) => {
-      this.businessesSubject.next(businesses as Business[]);
-    });
+    // Solo cargar datos cuando hay un usuario autenticado
+    this.auth.onAuthStateChanged(user => {
+      if (user) {
+        // Load businesses for current user
+        const businessesRef = collection(this.firestore, 'businesses');
+        const businessesQuery = query(businessesRef, where('userId', '==', user.uid));
+        collectionData(businessesQuery, { idField: 'id' }).subscribe((businesses: any[]) => {
+          this.businessesSubject.next(businesses as Business[]);
+        });
 
-    // Load products
-    const productsRef = collection(this.firestore, 'products');
-    collectionData(productsRef, { idField: 'id' }).subscribe((products: any[]) => {
-      this.productsSubject.next(products as Product[]);
-    });
+        // Load products for current user
+        const productsRef = collection(this.firestore, 'products');
+        const productsQuery = query(productsRef, where('userId', '==', user.uid));
+        collectionData(productsQuery, { idField: 'id' }).subscribe((products: any[]) => {
+          this.productsSubject.next(products as Product[]);
+        });
 
-    // Load costs
-    const costsRef = collection(this.firestore, 'costs');
-    collectionData(costsRef, { idField: 'id' }).subscribe((costs: any[]) => {
-      this.costsSubject.next(costs as Cost[]);
-    });
+        // Load costs for current user
+        const costsRef = collection(this.firestore, 'costs');
+        const costsQuery = query(costsRef, where('userId', '==', user.uid));
+        collectionData(costsQuery, { idField: 'id' }).subscribe((costs: any[]) => {
+          this.costsSubject.next(costs as Cost[]);
+        });
 
-    // Load business fixed costs
-    const fixedCostsRef = collection(this.firestore, 'businessFixedCosts');
-    collectionData(fixedCostsRef, { idField: 'id' }).subscribe((fixedCosts: any[]) => {
-      this.businessFixedCostsSubject.next(fixedCosts as BusinessFixedCost[]);
+        // Load business fixed costs for current user
+        const fixedCostsRef = collection(this.firestore, 'businessFixedCosts');
+        const fixedCostsQuery = query(fixedCostsRef, where('userId', '==', user.uid));
+        collectionData(fixedCostsQuery, { idField: 'id' }).subscribe((fixedCosts: any[]) => {
+          this.businessFixedCostsSubject.next(fixedCosts as BusinessFixedCost[]);
+        });
+      } else {
+        // Limpiar datos cuando no hay usuario
+        this.businessesSubject.next([]);
+        this.productsSubject.next([]);
+        this.costsSubject.next([]);
+        this.businessFixedCostsSubject.next([]);
+      }
     });
   }
 
   // Business Management
   async addBusiness(business: Omit<Business, 'id' | 'createdAt'>): Promise<Business> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+    
     const businessesRef = collection(this.firestore, 'businesses');
     const newBusiness = {
       ...business,
+      userId: user.uid,
       createdAt: new Date()
     };
     
@@ -91,9 +114,16 @@ export class FirebaseBusinessService {
 
   // Product Management
   async addProduct(product: Omit<Product, 'id'>): Promise<Product> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+    
     const productsRef = collection(this.firestore, 'products');
-    const docRef = await addDoc(productsRef, product);
-    return { ...product, id: docRef.id } as Product;
+    const newProduct = {
+      ...product,
+      userId: user.uid
+    };
+    const docRef = await addDoc(productsRef, newProduct);
+    return { ...newProduct, id: docRef.id } as Product;
   }
 
   getProducts(): Product[] {
@@ -120,9 +150,16 @@ export class FirebaseBusinessService {
 
   // Cost Management
   async addCost(cost: Omit<Cost, 'id'>): Promise<Cost> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+    
     const costsRef = collection(this.firestore, 'costs');
-    const docRef = await addDoc(costsRef, cost);
-    return { ...cost, id: docRef.id } as Cost;
+    const newCost = {
+      ...cost,
+      userId: user.uid
+    };
+    const docRef = await addDoc(costsRef, newCost);
+    return { ...newCost, id: docRef.id } as Cost;
   }
 
   getCosts(): Cost[] {
@@ -145,9 +182,16 @@ export class FirebaseBusinessService {
 
   // Business Fixed Costs Management
   async addBusinessFixedCost(cost: Omit<BusinessFixedCost, 'id'>): Promise<BusinessFixedCost> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+    
     const fixedCostsRef = collection(this.firestore, 'businessFixedCosts');
-    const docRef = await addDoc(fixedCostsRef, cost);
-    return { ...cost, id: docRef.id } as BusinessFixedCost;
+    const newCost = {
+      ...cost,
+      userId: user.uid
+    };
+    const docRef = await addDoc(fixedCostsRef, newCost);
+    return { ...newCost, id: docRef.id } as BusinessFixedCost;
   }
 
   getBusinessFixedCosts(): BusinessFixedCost[] {
