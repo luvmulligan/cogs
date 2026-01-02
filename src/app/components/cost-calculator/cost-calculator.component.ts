@@ -136,9 +136,9 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     const addButton = document.querySelector('.btn-add-cost');
     if(fromClick){
     // Scroll al nuevo costo agregado
-    setTimeout(() => {
-      addButton?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    // setTimeout(() => {
+    //   addButton?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // }, 100);
     }
 
   }
