@@ -3,9 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BusinessService } from '../../services/business.service';
 
 @Component({
-  selector: 'app-business-form',
-  templateUrl: './business-form.component.html',
-  styleUrls: ['./business-form.component.scss']
+    selector: 'app-business-form',
+    templateUrl: './business-form.component.html',
+    styleUrls: ['./business-form.component.scss'],
+    standalone: false
 })
 export class BusinessFormComponent {
   @Output() businessCreated = new EventEmitter<void>();

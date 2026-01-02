@@ -3,9 +3,10 @@ import { EducationService } from '../../services/education.service';
 import { EducationalContent, EducationCategory } from '../../models/business.model';
 
 @Component({
-  selector: 'app-educational-guide',
-  templateUrl: './educational-guide.component.html',
-  styleUrls: ['./educational-guide.component.scss']
+    selector: 'app-educational-guide',
+    templateUrl: './educational-guide.component.html',
+    styleUrls: ['./educational-guide.component.scss'],
+    standalone: false
 })
 export class EducationalGuideComponent implements OnInit {
   allContents: EducationalContent[] = [];

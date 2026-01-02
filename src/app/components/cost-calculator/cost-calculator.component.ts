@@ -6,9 +6,10 @@ import { Business, Product, CostType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-cost-calculator',
-  templateUrl: './cost-calculator.component.html',
-  styleUrls: ['./cost-calculator.component.scss']
+    selector: 'app-cost-calculator',
+    templateUrl: './cost-calculator.component.html',
+    styleUrls: ['./cost-calculator.component.scss'],
+    standalone: false
 })
 export class CostCalculatorComponent implements OnInit, OnDestroy {
   calculatorForm: FormGroup;

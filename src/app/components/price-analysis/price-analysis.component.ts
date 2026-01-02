@@ -5,9 +5,10 @@ import { Product, PriceAnalysis, Cost, CostType, BusinessFixedCost, Business } f
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-price-analysis',
-  templateUrl: './price-analysis.component.html',
-  styleUrls: ['./price-analysis.component.scss']
+    selector: 'app-price-analysis',
+    templateUrl: './price-analysis.component.html',
+    styleUrls: ['./price-analysis.component.scss'],
+    standalone: false
 })
 export class PriceAnalysisComponent implements OnInit, OnDestroy {
   products: Product[] = [];
