@@ -67,6 +67,21 @@ Si ves este error al intentar iniciar sesión con Google:
    - Los cambios en Firebase pueden tardar 1-2 minutos en aplicarse
    - Recarga la página después de habilitar Google Sign-In
 
+### Error: auth/unauthorized-domain
+
+Si ves este error, el dominio desde el cual estás accediendo no está autorizado:
+
+1. **Ve a Firebase Console**
+2. **Authentication → Settings → Authorized domains**
+3. **Agrega el dominio necesario:**
+   - Para desarrollo local: `localhost`
+   - Para GitHub Pages: `tu-usuario.github.io`
+   - Para otros dominios: agrégalos exactamente como aparecen
+4. **Guarda los cambios** y recarga la aplicación
+5. **Espera 1-2 minutos** para que los cambios se apliquen
+
+**Nota:** El error te dirá exactamente qué dominio necesitas agregar.
+
 ## Seguridad
 
 ⚠️ **IMPORTANTE:** Nunca subas tus archivos `environment.ts` y `environment.prod.ts` al repositorio. Ya están en `.gitignore`.

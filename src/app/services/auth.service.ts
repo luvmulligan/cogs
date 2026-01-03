@@ -68,6 +68,8 @@ export class AuthService {
         return 'Ya existe una cuenta con este email usando un método diferente';
       case 'auth/configuration-not-found':
         return 'Google Sign-In no está configurado correctamente. Por favor, habilita el proveedor de Google en Firebase Console → Authentication → Sign-in method';
+      case 'auth/unauthorized-domain':
+        return 'Dominio no autorizado. Agrega este dominio en Firebase Console → Authentication → Settings → Authorized domains. Necesitas agregar: ' + window.location.hostname;
       case 'auth/invalid-email':
         return 'El email no es válido';
       case 'auth/user-disabled':

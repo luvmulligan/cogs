@@ -744,6 +744,12 @@
             border-color: var(--primary-color);
           }
         }
+
+        small.hint {
+          font-size: 0.8rem;
+          color: var(--text-light);
+          margin-top: 0.25rem;
+        }
       }
 
       .form-actions {
