@@ -362,6 +362,142 @@ Punto de equilibrio = $10,000 / ($150 - $50)
           <strong><span class="material-icons icon-tip" style="font-size: 18px; vertical-align: middle;">lightbulb</span> Consejo:</strong> Mantén siemcode un colchón de efectivo equivalente a 3-6 meses de costos fijos. Esto te protege ante imcodevistos.
         </div>
       `
+    },
+    {
+      id: '7',
+      title: 'Activos e Inversiones: Cómo Recuperar tu Dinero',
+      category: EducationCategory.ASSETS,
+      difficulty: 'beginner',
+      estimatedTime: 7,
+      content: `
+        <h3>¿Qué son los Activos?</h3>
+        <p>Los activos son inversiones importantes que haces una sola vez para tu negocio: maquinaria, equipos, herramientas, vehículos, computadoras, etc. A diferencia de los gastos mensuales, estos se pagan una vez pero se usan durante mucho tiempo.</p>
+        
+        <h4>¿Por qué no se cargan todo de una vez?</h4>
+        <p>Imagina que compras un horno industrial por $20,000. Si intentas recuperar todo ese dinero en el primer mes, tus productos serían carísimos y nadie los compraría. En cambio, distribuyes ese costo a lo largo del tiempo que usarás el horno.</p>
+
+        <h3>Duración Estimada (o Vida Útil)</h3>
+        <p>Es el tiempo que esperas que el activo funcione y te genere valor. Por ejemplo:</p>
+        <ul>
+          <li><strong>Horno industrial:</strong> 5 años (60 meses)</li>
+          <li><strong>Computadora:</strong> 3 años (36 meses)</li>
+          <li><strong>Vehículo de reparto:</strong> 8 años (96 meses)</li>
+          <li><strong>Herramientas manuales:</strong> 2 años (24 meses)</li>
+          <li><strong>Mobiliario:</strong> 10 años (120 meses)</li>
+        </ul>
+
+        <h4>¿Cómo se calcula?</h4>
+        <p>Divides el costo de compra entre la duración estimada para saber cuánto "gastas" cada mes:</p>
+        <code>
+Costo Mensual = Valor de Compra / Duración en Meses
+        </code>
+
+        <h3>Ejemplo Práctico - Panadería</h3>
+        
+        <h4>Compras una amasadora por $6,000</h4>
+        <p>Estimas que durará 3 años (36 meses) antes de necesitar reemplazarla.</p>
+        <code>
+Costo Mensual = $6,000 / 36 meses = $166.67 por mes
+        </code>
+
+        <p>Esto significa que cada mes debes "recuperar" $166.67 en tus ventas para eventualmente poder comprar una nueva amasadora cuando se desgaste.</p>
+
+        <h4>¿Cómo afecta a mis precios?</h4>
+        <p>Este costo mensual de $166.67 se suma a tus otros costos fijos (alquiler, servicios, etc.) y se distribuye entre todos tus productos.</p>
+
+        <p><strong>Ejemplo con números completos:</strong></p>
+        <ul>
+          <li>Costos fijos tradicionales: $10,000/mes</li>
+          <li>Costo mensual de activos: $166.67/mes</li>
+          <li><strong>Total costos fijos: $10,166.67/mes</strong></li>
+        </ul>
+
+        <p>Si produces 1,000 panes al mes:</p>
+        <code>
+Costo fijo por pan = $10,166.67 / 1,000 = $10.17 por pan
+        </code>
+
+        <h3>¿Qué pasa si dura más o menos?</h3>
+        
+        <div class="tip">
+          <strong><span class="material-icons icon-check" style="font-size: 18px; vertical-align: middle;">check_circle</span> Si dura MÁS:</strong>
+          <p>¡Excelente! Ya recuperaste la inversión y ahora es ganancia pura. Por ejemplo, si la amasadora dura 4 años en vez de 3, después del tercer año ya no tienes ese costo.</p>
+        </div>
+
+        <div class="tip">
+          <strong><span class="material-icons icon-warning" style="font-size: 18px; vertical-align: middle;">warning</span> Si dura MENOS:</strong>
+          <p>Tendrás que reemplazarla antes de recuperar la inversión completa. Por eso es importante ser realista con la duración estimada.</p>
+        </div>
+
+        <h3>Consejos Prácticos</h3>
+        
+        <h4>1. Sé conservador con las estimaciones</h4>
+        <p>Es mejor estimar menos tiempo y que dure más, que lo contrario. Por ejemplo:</p>
+        <ul>
+          <li>❌ "Esta máquina durará 10 años" (muy optimista)</li>
+          <li>✅ "Esta máquina durará 5 años" (realista)</li>
+        </ul>
+
+        <h4>2. Considera el uso intensivo</h4>
+        <p>Una máquina que usas 12 horas al día se desgasta más rápido que una que usas 4 horas al día. Ajusta la duración según tu caso:</p>
+        <ul>
+          <li><strong>Uso intensivo (24/7):</strong> Reduce la duración estimada en 30-40%</li>
+          <li><strong>Uso moderado (8 horas/día):</strong> Usa la duración estándar</li>
+          <li><strong>Uso ocasional (pocas horas):</strong> Puede durar más tiempo</li>
+        </ul>
+
+        <h4>3. No olvides el mantenimiento</h4>
+        <p>El mantenimiento regular puede extender la vida de tus activos:</p>
+        <ul>
+          <li>Limpieza periódica</li>
+          <li>Reparaciones preventivas</li>
+          <li>Calibración y ajustes</li>
+        </ul>
+
+        <h4>4. Planifica el reemplazo</h4>
+        <p>Cuando el activo llegue al final de su duración estimada, deberías haber recuperado suficiente dinero para reemplazarlo. Considera abrir una cuenta de ahorros específica para esto.</p>
+
+        <h3>Ejemplo Completo - Cafetería</h3>
+        
+        <p><strong>Inversiones iniciales:</strong></p>
+        <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+          <tr style="background: #f5f5f5; font-weight: bold;">
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Activo</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Costo</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Duración</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Costo Mensual</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Máquina de café profesional</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$50,000</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">60 meses</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$833</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Refrigerador comercial</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$15,000</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">84 meses</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$179</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">Mobiliario (mesas, sillas)</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$12,000</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">120 meses</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$100</td>
+          </tr>
+          <tr style="background: #e8f5e9; font-weight: bold;">
+            <td colspan="3" style="padding: 0.5rem; border: 1px solid #ddd;">Total Costo Mensual de Activos</td>
+            <td style="padding: 0.5rem; border: 1px solid #ddd;">$1,112</td>
+          </tr>
+        </table>
+
+        <p>Estos $1,112/mes se suman a tus otros costos fijos y se distribuyen entre tus productos (cafés, pasteles, etc.).</p>
+
+        <div class="tip">
+          <strong><span class="material-icons icon-tip" style="font-size: 18px; vertical-align: middle;">lightbulb</span> Tip Final:</strong> 
+          <p>En la aplicación, cuando agregas un activo, el sistema calcula automáticamente el costo mensual y lo suma a tus costos fijos. Esto se distribuye proporcionalmente entre todos tus productos según las unidades que esperas vender.</p>
+        </div>
+      `
     }
   ];
 
@@ -390,7 +526,8 @@ Punto de equilibrio = $10,000 / ($150 - $50)
       [EducationCategory.PRICING]: 'Fijación de precios',
       [EducationCategory.PROFIT_MARGIN]: 'Margen de Ganancia',
       [EducationCategory.BREAK_EVEN]: 'Punto de Equilibrio',
-      [EducationCategory.CASH_FLOW]: 'Flujo de Caja'
+      [EducationCategory.CASH_FLOW]: 'Flujo de Caja',
+      [EducationCategory.ASSETS]: 'Activos e Inversiones'
     };
     return labels[category];
   }

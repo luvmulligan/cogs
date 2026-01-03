@@ -100,5 +100,6 @@ export enum EducationCategory {
   PRICING = 'pricing',
   PROFIT_MARGIN = 'profit_margin',
   BREAK_EVEN = 'break_even',
-  CASH_FLOW = 'cash_flow'
+  CASH_FLOW = 'cash_flow',
+  ASSETS = 'assets'
 }
