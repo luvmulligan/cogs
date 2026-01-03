@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Cost, CostType, PriceAnalysis, Product, BusinessFixedCost } from '../models/business.model';
+import { Cost, CostType, PriceAnalysis, Product, BusinessFixedCost, Asset } from '../models/business.model';
+import { FirebaseBusinessService } from './firebase-business.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PricingService {
 
-  constructor() {}
+  constructor(private businessService: FirebaseBusinessService) {}
 
   /**
    * Calcula el análisis de precios para un producto
@@ -71,15 +72,23 @@ export class PricingService {
   /**
    * Distribuye los costos fijos del negocio entre productos
    * Usa la proporción de unidades esperadas de cada producto
+   * Incluye la amortización de activos
    */
   private allocateFixedCostsToProduct(
     product: Product,
     businessFixedCosts: BusinessFixedCost[],
     allProducts: Product[]
   ): number {
+    // Costos fijos mensuales (alquiler, servicios, etc.)
     const totalFixedCosts = businessFixedCosts.reduce((sum, cost) => sum + cost.monthlyValue, 0);
     
-    if (totalFixedCosts === 0) return 0;
+    // Amortización mensual de activos del negocio
+    const totalDepreciation = this.businessService.getTotalMonthlyDepreciation(product.businessId);
+    
+    // Total de costos fijos incluyendo amortizaciones
+    const totalFixedCostsWithDepreciation = totalFixedCosts + totalDepreciation;
+    
+    if (totalFixedCostsWithDepreciation === 0) return 0;
 
     // Si el producto tiene unidades esperadas, calcular su proporción
     if (product.expectedMonthlyUnits && product.expectedMonthlyUnits > 0) {
@@ -90,7 +99,7 @@ export class PricingService {
       if (totalExpectedUnits > 0) {
         // Distribuir proporcionalmente según unidades esperadas
         const proportion = product.expectedMonthlyUnits / totalExpectedUnits;
-        const allocatedMonthlyFixed = totalFixedCosts * proportion;
+        const allocatedMonthlyFixed = totalFixedCostsWithDepreciation * proportion;
         // Retornar el costo fijo por unidad
         return allocatedMonthlyFixed / product.expectedMonthlyUnits;
       }
@@ -99,7 +108,7 @@ export class PricingService {
     // Si no hay unidades esperadas, distribuir equitativamente
     const productCount = allProducts.filter(p => p.businessId === product.businessId).length;
     if (productCount > 0) {
-      return totalFixedCosts / productCount;
+      return totalFixedCostsWithDepreciation / productCount;
     }
 
     return 0;

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
-import { Business, Product, BusinessFixedCost, CostType } from '../../models/business.model';
+import { Business, Product, BusinessFixedCost, CostType, Asset, AssetType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,6 +14,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   businesses: Business[] = [];
   products: Product[] = [];
   businessFixedCosts: BusinessFixedCost[] = [];
+  assets: Asset[] = [];
   selectedBusiness: Business | null = null;
   stats = {
     totalProducts: 0,
@@ -23,10 +24,28 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   showBusinessForm = false;
   showFixedCostsForm = false;
+  showAssetsForm = false;
   newFixedCost = {
     name: '',
     type: CostType.FIXED as CostType,
     monthlyValue: 0
+  };
+  newAsset = {
+    name: '',
+    type: AssetType.EQUIPMENT as AssetType,
+    purchaseValue: 0,
+    usefulLifeMonths: 12,
+    description: ''
+  };
+  assetTypes = Object.values(AssetType);
+  assetTypeLabels: { [key: string]: string } = {
+    [AssetType.MACHINERY]: 'Maquinaria',
+    [AssetType.EQUIPMENT]: 'Equipamiento',
+    [AssetType.TOOLS]: 'Herramientas',
+    [AssetType.FURNITURE]: 'Mobiliario',
+    [AssetType.VEHICLE]: 'Vehículos',
+    [AssetType.TECHNOLOGY]: 'Tecnología',
+    [AssetType.OTHER]: 'Otros'
   };
   private subscriptions: Subscription[] = [];
   @ViewChild('expenseChart', { static: false }) expenseChartRef?: ElementRef<HTMLCanvasElement>;
@@ -74,7 +93,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.refreshChart();
     });
 
-    this.subscriptions.push(businessSub, productsSub, fixedCostsSub);
+    // Suscribirse a los cambios de activos
+    const assetsSub = this.businessService.assets$.subscribe(() => {
+      this.loadAssets();
+      this.calculateStats();
+      this.refreshChart();
+    });
+
+    this.subscriptions.push(businessSub, productsSub, fixedCostsSub, assetsSub);
   }
 
   loadBusinessFixedCosts(): void {
@@ -122,6 +148,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   selectBusiness(business: Business): void {
     this.selectedBusiness = business;
     this.loadBusinessFixedCosts();
+    this.loadAssets();
     this.calculateStats();
     this.refreshChart();
   }
@@ -133,6 +160,68 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   onBusinessCreated(): void {
     this.showBusinessForm = false;
     this.loadData();
+  }
+
+  // Gestión de activos
+  loadAssets(): void {
+    if (this.selectedBusiness) {
+      this.assets = this.businessService.getAssetsByBusiness(this.selectedBusiness.id);
+    }
+  }
+
+  toggleAssetsForm(): void {
+    this.showAssetsForm = !this.showAssetsForm;
+  }
+
+  async addAsset(): Promise<void> {
+    if (!this.selectedBusiness || !this.isAssetValid()) {
+      return;
+    }
+
+    await this.businessService.addAsset({
+      businessId: this.selectedBusiness.id,
+      name: this.newAsset.name,
+      type: this.newAsset.type,
+      purchaseValue: this.newAsset.purchaseValue,
+      usefulLifeMonths: this.newAsset.usefulLifeMonths,
+      purchaseDate: new Date(),
+      description: this.newAsset.description
+    });
+
+    // Resetear formulario
+    this.newAsset = {
+      name: '',
+      type: AssetType.EQUIPMENT,
+      purchaseValue: 0,
+      usefulLifeMonths: 12,
+      description: ''
+    };
+    this.showAssetsForm = false;
+  }
+
+  async deleteAsset(id: string): Promise<void> {
+    if (confirm('¿Estás seguro de eliminar este activo?')) {
+      await this.businessService.deleteAsset(id);
+    }
+  }
+
+  isAssetValid(): boolean {
+    return this.newAsset.name.trim() !== '' && 
+           this.newAsset.purchaseValue > 0 &&
+           this.newAsset.usefulLifeMonths > 0;
+  }
+
+  getAssetDepreciation(asset: Asset): number {
+    return this.businessService.calculateMonthlyDepreciation(asset);
+  }
+
+  getTotalDepreciation(): number {
+    if (!this.selectedBusiness) return 0;
+    return this.businessService.getTotalMonthlyDepreciation(this.selectedBusiness.id);
+  }
+
+  getAssetTypeLabel(type: AssetType): string {
+    return this.assetTypeLabels[type] || type;
   }
 
   // Gestión de costos fijos del negocio

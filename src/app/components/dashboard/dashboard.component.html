@@ -51,6 +51,10 @@
           <span class="material-icons">settings</span>
           {{ showFixedCostsForm ? 'Ocultar' : 'Gestionar Costos Fijos' }}
         </button>
+        <button class="btn btn-secondary" (click)="toggleAssetsForm()">
+          <span class="material-icons">inventory_2</span>
+          {{ showAssetsForm ? 'Ocultar' : 'Gestionar Activos' }}
+        </button>
       </div>
 
       <!-- Costos Fijos del Negocio -->
@@ -102,6 +106,127 @@
             <button class="btn btn-success" (click)="addFixedCost()" [disabled]="!isFixedCostValid()">
               <span class="material-icons">add</span> Agregar
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activos e Inversiones -->
+      <div class="assets-section" *ngIf="showAssetsForm">
+        <h4><span class="material-icons">inventory_2</span> Activos e Inversiones</h4>
+        <p class="info-text">
+          <span class="material-icons icon-tip">info</span>
+          Los activos (maquinaria, equipos, herramientas) se amortizan mensualmente según su vida útil. 
+          Esta amortización se suma automáticamente a los costos fijos del negocio.
+        </p>
+
+        <div class="assets-list" *ngIf="assets.length > 0">
+          <div class="asset-item" *ngFor="let asset of assets">
+            <div class="asset-main-info">
+              <div class="asset-details">
+                <strong>{{ asset.name }}</strong>
+                <span class="asset-type-badge">{{ getAssetTypeLabel(asset.type) }}</span>
+                <p class="asset-description" *ngIf="asset.description">{{ asset.description }}</p>
+              </div>
+              <button class="btn-icon" (click)="deleteAsset(asset.id)" title="Eliminar">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+            <div class="asset-financial">
+              <div class="asset-stat">
+                <span class="stat-label">Valor de compra:</span>
+                <span class="stat-value">${{ asset.purchaseValue | number:'1.2-2' }}</span>
+              </div>
+              <div class="asset-stat">
+                <span class="stat-label">Vida útil:</span>
+                <span class="stat-value">{{ asset.usefulLifeMonths }} meses</span>
+              </div>
+              <div class="asset-stat highlight">
+                <span class="stat-label">Amortización mensual:</span>
+                <span class="stat-value">${{ getAssetDepreciation(asset) | number:'1.2-2' }}/mes</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="assets-total">
+            <strong>Total Amortización Mensual:</strong>
+            <strong class="total-amount">${{ getTotalDepreciation() | number:'1.2-2' }}</strong>
+          </div>
+          
+          <div class="combined-fixed-costs">
+            <div class="combined-row">
+              <span>Costos Fijos Tradicionales:</span>
+              <span>${{ getTotalFixedCosts() | number:'1.2-2' }}</span>
+            </div>
+            <div class="combined-row">
+              <span>Amortización de Activos:</span>
+              <span>${{ getTotalDepreciation() | number:'1.2-2' }}</span>
+            </div>
+            <div class="combined-row total">
+              <strong>Total Costos Fijos Mensuales:</strong>
+              <strong>${{ getTotalFixedCosts() + getTotalDepreciation() | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-asset-form">
+          <h5>Agregar Activo</h5>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre del activo</label>
+              <input 
+                type="text" 
+                [(ngModel)]="newAsset.name" 
+                placeholder="ej: Horno Industrial"
+                class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label>Tipo de activo</label>
+              <select [(ngModel)]="newAsset.type" class="form-control">
+                <option *ngFor="let type of assetTypes" [value]="type">
+                  {{ getAssetTypeLabel(type) }}
+                </option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Valor de compra ($)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="newAsset.purchaseValue" 
+                placeholder="0.00"
+                class="form-control"
+                min="0"
+                step="0.01">
+            </div>
+            
+            <div class="form-group">
+              <label>Vida útil (meses)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="newAsset.usefulLifeMonths" 
+                placeholder="12"
+                class="form-control"
+                min="1">
+            </div>
+            
+            <div class="form-group full-width">
+              <label>Descripción (opcional)</label>
+              <input 
+                type="text" 
+                [(ngModel)]="newAsset.description" 
+                placeholder="ej: Horno eléctrico de 6 bandejas"
+                class="form-control">
+            </div>
+
+            <div class="form-actions full-width">
+              <button class="btn btn-success" (click)="addAsset()" [disabled]="!isAssetValid()">
+                <span class="material-icons">add</span> Agregar Activo
+              </button>
+              <button class="btn btn-secondary" (click)="toggleAssetsForm()">
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       </div>

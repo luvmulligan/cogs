@@ -14,7 +14,7 @@ import {
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Business, Product, Cost, BusinessFixedCost } from '../models/business.model';
+import { Business, Product, Cost, BusinessFixedCost, Asset } from '../models/business.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,11 +24,13 @@ export class FirebaseBusinessService {
   private productsSubject = new BehaviorSubject<Product[]>([]);
   private costsSubject = new BehaviorSubject<Cost[]>([]);
   private businessFixedCostsSubject = new BehaviorSubject<BusinessFixedCost[]>([]);
+  private assetsSubject = new BehaviorSubject<Asset[]>([]);
 
   businesses$ = this.businessesSubject.asObservable();
   products$ = this.productsSubject.asObservable();
   costs$ = this.costsSubject.asObservable();
   businessFixedCosts$ = this.businessFixedCostsSubject.asObservable();
+  assets$ = this.assetsSubject.asObservable();
 
   constructor(
     private firestore: Firestore,
@@ -68,12 +70,20 @@ export class FirebaseBusinessService {
         collectionData(fixedCostsQuery, { idField: 'id' }).subscribe((fixedCosts: any[]) => {
           this.businessFixedCostsSubject.next(fixedCosts as BusinessFixedCost[]);
         });
+
+        // Load assets for current user
+        const assetsRef = collection(this.firestore, 'assets');
+        const assetsQuery = query(assetsRef, where('userId', '==', user.uid));
+        collectionData(assetsQuery, { idField: 'id' }).subscribe((assets: any[]) => {
+          this.assetsSubject.next(assets as Asset[]);
+        });
       } else {
         // Limpiar datos cuando no hay usuario
         this.businessesSubject.next([]);
         this.productsSubject.next([]);
         this.costsSubject.next([]);
         this.businessFixedCostsSubject.next([]);
+        this.assetsSubject.next([]);
       }
     });
   }
@@ -215,5 +225,60 @@ export class FirebaseBusinessService {
   async deleteBusinessFixedCost(id: string): Promise<void> {
     const costDoc = doc(this.firestore, 'businessFixedCosts', id);
     await deleteDoc(costDoc);
+  }
+
+  // Assets Management
+  async addAsset(asset: Omit<Asset, 'id'>): Promise<Asset> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+    
+    const assetsRef = collection(this.firestore, 'assets');
+    const newAsset = {
+      ...asset,
+      userId: user.uid,
+      purchaseDate: asset.purchaseDate || new Date()
+    };
+    const docRef = await addDoc(assetsRef, newAsset);
+    return { ...newAsset, id: docRef.id } as Asset;
+  }
+
+  getAssets(): Asset[] {
+    return this.assetsSubject.value;
+  }
+
+  getAsset(id: string): Asset | undefined {
+    return this.assetsSubject.value.find(a => a.id === id);
+  }
+
+  getAssetsByBusiness(businessId: string): Asset[] {
+    return this.assetsSubject.value.filter(a => a.businessId === businessId);
+  }
+
+  // Calcula la amortización mensual de un activo
+  calculateMonthlyDepreciation(asset: Asset): number {
+    return asset.purchaseValue / asset.usefulLifeMonths;
+  }
+
+  // Obtiene el total de amortizaciones mensuales de todos los activos de un negocio
+  getTotalMonthlyDepreciation(businessId: string): number {
+    return this.getAssetsByBusiness(businessId)
+      .reduce((total, asset) => total + this.calculateMonthlyDepreciation(asset), 0);
+  }
+
+  // Obtiene el total de costos fijos incluyendo amortizaciones
+  getTotalBusinessFixedCostsWithDepreciation(businessId: string): number {
+    const fixedCosts = this.getTotalBusinessFixedCosts(businessId);
+    const depreciation = this.getTotalMonthlyDepreciation(businessId);
+    return fixedCosts + depreciation;
+  }
+
+  async updateAsset(id: string, updates: Partial<Asset>): Promise<void> {
+    const assetDoc = doc(this.firestore, 'assets', id);
+    await updateDoc(assetDoc, updates);
+  }
+
+  async deleteAsset(id: string): Promise<void> {
+    const assetDoc = doc(this.firestore, 'assets', id);
+    await deleteDoc(assetDoc);
   }
 }

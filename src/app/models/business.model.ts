@@ -28,6 +28,28 @@ export interface BusinessFixedCost {
   description?: string;
 }
 
+// Activos e inversiones (maquinaria, herramientas, equipos)
+export interface Asset {
+  id: string;
+  businessId: string;
+  name: string;
+  type: AssetType;
+  purchaseValue: number;     // Costo de compra/inversión inicial
+  usefulLifeMonths: number;  // Vida útil en meses
+  purchaseDate: Date;        // Fecha de compra
+  description?: string;
+}
+
+export enum AssetType {
+  MACHINERY = 'machinery',       // Maquinaria
+  EQUIPMENT = 'equipment',       // Equipamiento
+  TOOLS = 'tools',              // Herramientas
+  FURNITURE = 'furniture',      // Mobiliario
+  VEHICLE = 'vehicle',          // Vehículos
+  TECHNOLOGY = 'technology',    // Tecnología (computadoras, software)
+  OTHER = 'other'               // Otros
+}
+
 // Costos directos/variables a nivel de producto
 export interface Cost {
   id: string;
