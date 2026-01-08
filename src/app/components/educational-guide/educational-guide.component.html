@@ -1,7 +1,7 @@
 <div class="container">
   <div class="education-header">
-    <h2><span class="material-icons">menu_book</span> Centro de Aprendizaje</h2>
-    <p class="subtitle">Aprende sobre gestión financiera y costos para tu negocio</p>
+    <h2><span class="material-icons">menu_book</span> {{ t.guideTitle }}</h2>
+    <p class="subtitle">{{ t.guideSubtitle }}</p>
   </div>
 
   <!-- Vista de lista -->
@@ -10,7 +10,7 @@
     <!-- Filtros -->
     <div class="filters card">
       <div class="filter-group">
-        <label for="category">Filtrar por tema:</label>
+        <label for="category">{{ t.allCategories }}:</label>
         <select 
           id="category"
           class="form-control" 
@@ -23,7 +23,7 @@
       </div>
 
       <div class="filter-group">
-        <label for="difficulty">Filtrar por nivel:</label>
+        <label for="difficulty">{{ t.allLevels }}:</label>
         <select 
           id="difficulty"
           class="form-control" 
@@ -48,7 +48,7 @@
             {{ getDifficultyIcon(content.difficulty) }}
             {{ getDifficultyLabel(content.difficulty) }}
           </span>
-          <span class="time-badge"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">schedule</span> {{ content.estimatedTime }} min</span>
+          <span class="time-badge"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">schedule</span> {{ content.estimatedTime }} {{ t.minutesRead }}</span>
         </div>
 
         <h3>{{ content.title }}</h3>
@@ -57,13 +57,13 @@
           <span class="category-tag">
             {{ getCategoryLabel(content.category) }}
           </span>
-          <span class="read-more">Leer más →</span>
+          <span class="read-more">{{ t.readMore }} →</span>
         </div>
       </div>
     </div>
 
     <div *ngIf="filteredContents.length === 0" class="empty-state card">
-      <p>No se encontraron guías con los filtros seleccionados.</p>
+      <p>{{ t.noArticles }}</p>
     </div>
   </div>
 
@@ -71,7 +71,7 @@
   <div *ngIf="selectedContent" class="content-detail">
     
     <button class="btn-back" (click)="backToList()">
-      ← Volver a la lista
+      ← {{ t.backToGuide }}
     </button>
 
     <div class="card detail-card">
@@ -83,7 +83,7 @@
             {{ getDifficultyIcon(selectedContent.difficulty) }}
             {{ getDifficultyLabel(selectedContent.difficulty) }}
           </span>
-          <span class="time-badge"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">schedule</span> {{ selectedContent.estimatedTime }} minutos</span>
+          <span class="time-badge"><span class="material-icons" style="font-size: 16px; vertical-align: middle;">schedule</span> {{ selectedContent.estimatedTime }} {{ t.minutesRead }}</span>
           <span class="category-tag">
             {{ getCategoryLabel(selectedContent.category) }}
           </span>

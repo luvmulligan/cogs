@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService, Translations } from '../../services/language.service';
 
 @Component({
   selector: 'app-login',
@@ -8,17 +9,27 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.scss'],
   standalone: false
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
   errorMessage: string = '';
   loading: boolean = false;
   isRegisterMode: boolean = false;
+  t: Translations;
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private languageService: LanguageService
+  ) {
+    this.t = this.languageService.getTranslations();
+  }
+
+  ngOnInit(): void {
+    this.languageService.language$.subscribe(() => {
+      this.t = this.languageService.getTranslations();
+    });
+  }
 
   async loginWithGoogle(): Promise<void> {
     this.loading = true;
@@ -36,7 +47,7 @@ export class LoginComponent {
 
   async onSubmit(): Promise<void> {
     if (!this.email || !this.password) {
-      this.errorMessage = 'Por favor completa todos los campos';
+      this.errorMessage = this.t.fillAllFields;
       return;
     }
 

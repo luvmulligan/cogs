@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
+import { LanguageService, Translations } from '../../services/language.service';
 import { Product, PriceAnalysis, Cost, CostType, BusinessFixedCost, Business } from '../../models/business.model';
 import { Subscription } from 'rxjs';
 
@@ -19,6 +20,7 @@ export class PriceAnalysisComponent implements OnInit, OnDestroy {
   businessFixedCosts: BusinessFixedCost[] = [];
   costsByType: { [key: string]: number } = {};
   scenarios: Array<any> = [];
+  t: Translations;
   private subscriptions: Subscription[] = [];
   
   costTypeLabels: { [key: string]: string } = {
@@ -32,10 +34,16 @@ export class PriceAnalysisComponent implements OnInit, OnDestroy {
 
   constructor(
     private businessService: FirebaseBusinessService,
-    private pricingService: PricingService
-  ) {}
+    private pricingService: PricingService,
+    private languageService: LanguageService
+  ) {
+    this.t = this.languageService.getTranslations();
+  }
 
   ngOnInit(): void {
+    this.languageService.language$.subscribe(() => {
+      this.t = this.languageService.getTranslations();
+    });
     this.loadData();
   }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
+import { LanguageService, Translations } from '../../services/language.service';
 import { Business, Product, BusinessFixedCost, CostType, Asset, AssetType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
 
@@ -16,6 +17,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   businessFixedCosts: BusinessFixedCost[] = [];
   assets: Asset[] = [];
   selectedBusiness: Business | null = null;
+  t: Translations;
   stats = {
     totalProducts: 0,
     avgMargin: 0,
@@ -38,25 +40,37 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     description: ''
   };
   assetTypes = Object.values(AssetType);
-  assetTypeLabels: { [key: string]: string } = {
-    [AssetType.MACHINERY]: 'Maquinaria',
-    [AssetType.EQUIPMENT]: 'Equipamiento',
-    [AssetType.TOOLS]: 'Herramientas',
-    [AssetType.FURNITURE]: 'Mobiliario',
-    [AssetType.VEHICLE]: 'Vehículos',
-    [AssetType.TECHNOLOGY]: 'Tecnología',
-    [AssetType.OTHER]: 'Otros'
-  };
+  assetTypeLabels: { [key: string]: string } = {};
   private subscriptions: Subscription[] = [];
   @ViewChild('expenseChart', { static: false }) expenseChartRef?: ElementRef<HTMLCanvasElement>;
 
   constructor(
     private businessService: FirebaseBusinessService,
-    private pricingService: PricingService
-  ) {}
+    private pricingService: PricingService,
+    private languageService: LanguageService
+  ) {
+    this.t = this.languageService.getTranslations();
+    this.updateAssetTypeLabels();
+  }
 
   ngOnInit(): void {
+    this.languageService.language$.subscribe(() => {
+      this.t = this.languageService.getTranslations();
+      this.updateAssetTypeLabels();
+    });
     this.loadData();
+  }
+  
+  updateAssetTypeLabels(): void {
+    this.assetTypeLabels = {
+      [AssetType.MACHINERY]: this.t.assetMachinery,
+      [AssetType.EQUIPMENT]: this.t.assetEquipment,
+      [AssetType.TOOLS]: this.t.assetTools,
+      [AssetType.FURNITURE]: this.t.assetFurniture,
+      [AssetType.VEHICLE]: this.t.assetVehicle,
+      [AssetType.TECHNOLOGY]: this.t.assetTechnology,
+      [AssetType.OTHER]: this.t.assetOther
+    };
   }
 
   ngOnDestroy(): void {

@@ -1,8 +1,8 @@
 <div class="container">
   <div class="dashboard-header">
-    <h2><span class="material-icons">dashboard</span>Panel de Control</h2>
+    <h2><span class="material-icons">dashboard</span>{{ t.dashboard }}</h2>
     <button class="btn btn-primary" (click)="toggleBusinessForm()">
-      {{ showBusinessForm ? 'Cancelar' : '+ Nuevo Negocio' }}
+      {{ showBusinessForm ? t.cancel : '+ ' + t.createBusiness }}
     </button>
   </div>
 
@@ -17,7 +17,7 @@
     <h3>¡Bienvenido a AppCogs!</h3>
     <p>Comienza creando tu primer negocio para empezar a gestionar costos y calcular precios.</p>
     <button class="btn btn-primary" (click)="toggleBusinessForm()">
-      Crear Mi Primer Negocio
+      {{ t.createBusiness }}
     </button>
   </div>
 
@@ -25,7 +25,7 @@
   <div *ngIf="businesses.length > 0 && !showBusinessForm">
     <!-- Selector de negocio -->
     <div class="business-selector card" *ngIf="businesses.length > 1">
-      <label>Selecciona un negocio:</label>
+      <label>{{ t.selectBusiness }}:</label>
       <div class="business-buttons">
         <button 
           *ngFor="let business of businesses"
@@ -49,21 +49,20 @@
         </div>
         <button class="btn btn-secondary" (click)="showFixedCostsForm = !showFixedCostsForm">
           <span class="material-icons">settings</span>
-          {{ showFixedCostsForm ? 'Ocultar' : 'Gestionar Costos Fijos' }}
+          {{ showFixedCostsForm ? t.close : t.manageFixedCosts }}
         </button>
         <button class="btn btn-secondary" (click)="toggleAssetsForm()">
           <span class="material-icons">inventory_2</span>
-          {{ showAssetsForm ? 'Ocultar' : 'Gestionar Activos' }}
+          {{ showAssetsForm ? t.close : t.manageAssets }}
         </button>
       </div>
 
       <!-- Costos Fijos del Negocio -->
       <div class="fixed-costs-section" *ngIf="showFixedCostsForm">
-        <h4><span class="material-icons">account_balance</span> Costos Fijos Mensuales del Negocio</h4>
+        <h4><span class="material-icons">account_balance</span> {{ t.fixedCostsTitle }}</h4>
         <p class="info-text">
           <span class="material-icons icon-tip">info</span>
-          Estos costos se pagan una vez al mes para todo el negocio (alquiler, servicios, salarios administrativos, etc.) 
-          y se distribuyen automáticamente entre todos tus productos.
+          {{ t.fixedCostsInfo }}
         </p>
 
         <div class="fixed-costs-list" *ngIf="businessFixedCosts.length > 0">
@@ -72,24 +71,24 @@
               <strong>{{ cost.name }}</strong>
               <span class="cost-type-badge">{{ getCostTypeLabel(cost.type) }}</span>
             </div>
-            <div class="cost-value">${{ cost.monthlyValue | number:'1.2-2' }}/mes</div>
-            <button class="btn-icon" (click)="deleteFixedCost(cost.id)" title="Eliminar">
+            <div class="cost-value">${{ cost.monthlyValue | number:'1.2-2' }}/{{ t.monthly }}</div>
+            <button class="btn-icon" (click)="deleteFixedCost(cost.id)" [title]="t.delete">
               <span class="material-icons">delete</span>
             </button>
           </div>
           <div class="fixed-costs-total">
-            <strong>Total Costos Fijos Mensuales:</strong>
+            <strong>{{ t.totalFixedCosts }}:</strong>
             <strong class="total-amount">${{ getTotalFixedCosts() | number:'1.2-2' }}</strong>
           </div>
         </div>
 
         <div class="add-fixed-cost-form">
-          <h5>Agregar Costo Fijo</h5>
+          <h5>{{ t.addCostButton }}</h5>
           <div class="form-inline">
             <input 
               type="text" 
               [(ngModel)]="newFixedCost.name" 
-              placeholder="Nombre (ej: Alquiler)"
+              [placeholder]="t.conceptPlaceholder"
               class="form-control">
             <select [(ngModel)]="newFixedCost.type" class="form-control">
               <option value="fixed">Costo Fijo</option>
@@ -99,12 +98,12 @@
             <input 
               type="number" 
               [(ngModel)]="newFixedCost.monthlyValue" 
-              placeholder="Valor mensual"
+              [placeholder]="t.monthlyCost"
               class="form-control"
               min="0"
               step="0.01">
             <button class="btn btn-success" (click)="addFixedCost()" [disabled]="!isFixedCostValid()">
-              <span class="material-icons">add</span> Agregar
+              <span class="material-icons">add</span> {{ t.add }}
             </button>
           </div>
         </div>
@@ -112,11 +111,10 @@
 
       <!-- Activos e Inversiones -->
       <div class="assets-section" *ngIf="showAssetsForm">
-        <h4><span class="material-icons">inventory_2</span> Activos e Inversiones</h4>
+        <h4><span class="material-icons">inventory_2</span> {{ t.assetsTitle }}</h4>
         <p class="info-text">
           <span class="material-icons icon-tip">info</span>
-          Registra tus inversiones en maquinaria, equipos y herramientas. El costo se distribuirá mensualmente 
-          según la duración estimada, sumándose automáticamente a los costos fijos del negocio.
+          {{ t.assetsInfo }}
         </p>
 
         <div class="assets-list" *ngIf="assets.length > 0">
@@ -127,61 +125,61 @@
                 <span class="asset-type-badge">{{ getAssetTypeLabel(asset.type) }}</span>
                 <p class="asset-description" *ngIf="asset.description">{{ asset.description }}</p>
               </div>
-              <button class="btn-icon" (click)="deleteAsset(asset.id)" title="Eliminar">
+              <button class="btn-icon" (click)="deleteAsset(asset.id)" [title]="t.delete">
                 <span class="material-icons">delete</span>
               </button>
             </div>
             <div class="asset-financial">
               <div class="asset-stat">
-                <span class="stat-label">Valor de compra:</span>
+                <span class="stat-label">{{ t.purchaseValue }}:</span>
                 <span class="stat-value">${{ asset.purchaseValue | number:'1.2-2' }}</span>
               </div>
               <div class="asset-stat">
-                <span class="stat-label">Duración estimada:</span>
-                <span class="stat-value">{{ asset.usefulLifeMonths }} meses</span>
+                <span class="stat-label">{{ t.estimatedDuration }}:</span>
+                <span class="stat-value">{{ asset.usefulLifeMonths }} {{ t.months }}</span>
               </div>
               <div class="asset-stat highlight">
-                <span class="stat-label">Amortización mensual:</span>
-                <span class="stat-value">${{ getAssetDepreciation(asset) | number:'1.2-2' }}/mes</span>
+                <span class="stat-label">{{ t.monthlyDepreciation }}:</span>
+                <span class="stat-value">${{ getAssetDepreciation(asset) | number:'1.2-2' }}/{{ t.monthly }}</span>
               </div>
             </div>
           </div>
           
           <div class="assets-total">
-            <strong>Total Amortización Mensual:</strong>
+            <strong>{{ t.totalDepreciation }}:</strong>
             <strong class="total-amount">${{ getTotalDepreciation() | number:'1.2-2' }}</strong>
           </div>
           
           <div class="combined-fixed-costs">
             <div class="combined-row">
-              <span>Costos Fijos Tradicionales:</span>
+              <span>{{ t.traditionalCosts }}:</span>
               <span>${{ getTotalFixedCosts() | number:'1.2-2' }}</span>
             </div>
             <div class="combined-row">
-              <span>Amortización de Activos:</span>
+              <span>{{ t.assetDepreciation }}:</span>
               <span>${{ getTotalDepreciation() | number:'1.2-2' }}</span>
             </div>
             <div class="combined-row total">
-              <strong>Total Costos Fijos Mensuales:</strong>
+              <strong>{{ t.totalCombined }}:</strong>
               <strong>${{ getTotalFixedCosts() + getTotalDepreciation() | number:'1.2-2' }}</strong>
             </div>
           </div>
         </div>
 
         <div class="add-asset-form">
-          <h5>Agregar Activo</h5>
+          <h5>{{ t.addAssetButton }}</h5>
           <div class="form-grid">
             <div class="form-group">
-              <label>Nombre del activo</label>
+              <label>{{ t.assetName }}</label>
               <input 
                 type="text" 
                 [(ngModel)]="newAsset.name" 
-                placeholder="ej: Horno Industrial"
+                [placeholder]="t.assetNamePlaceholder"
                 class="form-control">
             </div>
             
             <div class="form-group">
-              <label>Tipo de activo</label>
+              <label>{{ t.assetType }}</label>
               <select [(ngModel)]="newAsset.type" class="form-control">
                 <option *ngFor="let type of assetTypes" [value]="type">
                   {{ getAssetTypeLabel(type) }}
@@ -190,7 +188,7 @@
             </div>
             
             <div class="form-group">
-              <label>Valor de compra ($)</label>
+              <label>{{ t.purchaseValue }} ($)</label>
               <input 
                 type="number" 
                 [(ngModel)]="newAsset.purchaseValue" 
@@ -201,31 +199,31 @@
             </div>
             
             <div class="form-group">
-              <label>Duración estimada (meses)</label>
+              <label>{{ t.estimatedDuration }}</label>
               <input 
                 type="number" 
                 [(ngModel)]="newAsset.usefulLifeMonths" 
                 placeholder="12"
                 class="form-control"
                 min="1">
-              <small class="hint">En cuántos meses esperas recuperar esta inversión</small>
+              <small class="hint">{{ t.estimatedDurationHint }}</small>
             </div>
             
             <div class="form-group full-width">
-              <label>Descripción (opcional)</label>
+              <label>{{ t.description }} ({{ t.optional }})</label>
               <input 
                 type="text" 
                 [(ngModel)]="newAsset.description" 
-                placeholder="ej: Horno eléctrico de 6 bandejas"
+                [placeholder]="t.descriptionPlaceholder"
                 class="form-control">
             </div>
 
             <div class="form-actions full-width">
               <button class="btn btn-success" (click)="addAsset()" [disabled]="!isAssetValid()">
-                <span class="material-icons">add</span> Agregar Activo
+                <span class="material-icons">add</span> {{ t.addAssetButton }}
               </button>
               <button class="btn btn-secondary" (click)="toggleAssetsForm()">
-                Cancelar
+                {{ t.cancel }}
               </button>
             </div>
           </div>
@@ -269,13 +267,13 @@
       <div class="stat-card card">
         <div class="stat-icon"><span class="material-icons bigger--icon">inventory_2</span></div>
         <div class="stat-value">{{ stats.totalProducts }}</div>
-        <div class="stat-label">Productos</div>
+        <div class="stat-label">{{ t.products }}</div>
       </div>
 
       <div class="stat-card card">
         <div class="stat-icon"><span class="material-icons bigger--icon">data_thresholding</span></div>
         <div class="stat-value">{{ stats.avgMargin | number:'1.1-1' }}%</div>
-        <div class="stat-label">Margen Promedio</div>
+        <div class="stat-label">{{ t.margin }}</div>
       </div>
 
       <div class="stat-card card">
@@ -288,8 +286,8 @@
     <!-- Lista de productos -->
     <div class="products-section card">
       <div class="section-header">
-        <h3>Productos</h3>
-        <a routerLink="/calculator" class="btn btn-primary">+ Nuevo Producto</a>
+        <h3>{{ t.products }}</h3>
+        <a routerLink="/calculator" class="btn btn-primary">+ {{ t.addProduct }}</a>
       </div>
 
       <div class="products-list" *ngIf="getProductsForBusiness().length > 0">
@@ -297,16 +295,16 @@
           <div class="product-info">
             <div class="product-name">{{ product.name }}</div>
             <div class="product-details">
-              <span class="product-margin">Margen: {{ product.targetMargin }}%</span>
+              <span class="product-margin">{{ t.margin }}: {{ product.targetMargin }}%</span>
               <span class="product-units" *ngIf="product.expectedMonthlyUnits">
-                {{ product.expectedMonthlyUnits }} unidades/mes
+                {{ product.expectedMonthlyUnits }} {{ t.expectedUnits }}
               </span>
               <span class="product-units warning" *ngIf="!product.expectedMonthlyUnits">
                 ⚠️ Sin unidades esperadas
               </span>
             </div>
           </div>
-          <button class="btn-icon" (click)="editProductUnits(product)" title="Editar unidades esperadas">
+          <button class="btn-icon" (click)="editProductUnits(product)" [title]="t.edit">
             <span class="material-icons">edit</span>
           </button>
         </div>
@@ -314,7 +312,7 @@
 
       <div class="empty-products" *ngIf="getProductsForBusiness().length === 0">
         <p>No hay productos registrados aún.</p>
-        <a routerLink="/calculator" class="btn btn-success">Crear Primer Producto</a>
+        <a routerLink="/calculator" class="btn btn-success">{{ t.addProduct }}</a>
       </div>
     </div>
 
@@ -322,20 +320,20 @@
     <div class="quick-actions grid grid-3">
       <a routerLink="/calculator" class="action-card card">
         <div class="action-icon"><span class="material-icons bigger--icon">calculate</span></div>
-        <h4>Calcular Costos</h4>
-        <p>Ingresa los costos de tus productos</p>
+        <h4>{{ t.calculator }}</h4>
+        <p>{{ t.calculatorSubtitle }}</p>
       </a>
 
       <a routerLink="/analysis" class="action-card card">
         <div class="action-icon"><span class="material-icons bigger--icon">payments</span></div>
-        <h4>Analizar Precios</h4>
-        <p>Determina el precio óptimo de venta</p>
+        <h4>{{ t.analysis }}</h4>
+        <p>{{ t.analysisSubtitle }}</p>
       </a>
 
       <a routerLink="/education" class="action-card card">
         <div class="action-icon"><span class="material-icons bigger--icon">menu_book</span></div>
-        <h4>Aprende</h4>
-        <p>Guías sobre gestión financiera</p>
+        <h4>{{ t.education }}</h4>
+        <p>{{ t.guideSubtitle }}</p>
       </a>
     </div>
   </div>

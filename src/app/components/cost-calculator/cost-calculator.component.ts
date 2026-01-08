@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
+import { LanguageService, Translations } from '../../services/language.service';
 import { Business, Product, CostType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
 
@@ -20,6 +21,7 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
   mode: 'new' | 'existing' = 'new';
   selectedProduct: Product | null = null;
   existingCosts: any[] = [];
+  t: Translations;
   private subscriptions: Subscription[] = [];
 
   costTypeLabels: { [key: string]: string } = {
@@ -34,8 +36,10 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private businessService: FirebaseBusinessService,
-    private pricingService: PricingService
+    private pricingService: PricingService,
+    private languageService: LanguageService
   ) {
+    this.t = this.languageService.getTranslations();
     this.calculatorForm = this.fb.group({
       mode: ['new'],
       businessId: ['', Validators.required],
@@ -49,6 +53,10 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.languageService.language$.subscribe(() => {
+      this.t = this.languageService.getTranslations();
+    });
+    
     const businessSub = this.businessService.businesses$.subscribe(businesses => {
       this.businesses = businesses;
     });

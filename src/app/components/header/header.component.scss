@@ -63,6 +63,29 @@
     opacity: 0.9;
   }
   
+  .btn-language {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .material-icons {
+      font-size: 1.1rem;
+    }
+  }
+  
   .btn-logout {
     display: flex;
     align-items: center;

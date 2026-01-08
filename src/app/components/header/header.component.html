@@ -2,36 +2,40 @@
   <div class="header-container">
     <div class="logo">
       <h1><span class="material-icons">settings_applications</span> AppCogs</h1>
-      <span class="subtitle">Gestión de Costos</span>
+      <span class="subtitle">{{ t.appTitle }}</span>
     </div>
     
     <nav class="nav">
       <a routerLink="/dashboard" 
          class="nav-link" 
          [class.active]="isActive('/dashboard')">
-        <span class="material-icons">dashboard</span> Dashboard
+        <span class="material-icons">dashboard</span> {{ t.dashboard }}
       </a>
       <a routerLink="/calculator" 
          class="nav-link" 
          [class.active]="isActive('/calculator')">
-        <span class="material-icons">calculate</span> Calculadora
+        <span class="material-icons">calculate</span> {{ t.calculator }}
       </a>
       <a routerLink="/analysis" 
          class="nav-link" 
          [class.active]="isActive('/analysis')">
-        <span class="material-icons">data_thresholding</span> Análisis
+        <span class="material-icons">data_thresholding</span> {{ t.analysis }}
       </a>
       <a routerLink="/education" 
          class="nav-link" 
          [class.active]="isActive('/education')">
-        <span class="material-icons">menu_book</span> Aprende
+        <span class="material-icons">menu_book</span> {{ t.education }}
       </a>
     </nav>
     
     <div class="user-menu" *ngIf="user$ | async as user">
+      <button class="btn-language" (click)="toggleLanguage()" [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
+        <span class="material-icons">language</span>
+        {{ currentLanguage === 'es' ? 'EN' : 'ES' }}
+      </button>
       <span class="user-email">{{ user.email }}</span>
       <button class="btn-logout" (click)="logout()">
-        <span class="material-icons">logout</span> Salir
+        <span class="material-icons">logout</span> {{ t.logout }}
       </button>
     </div>
   </div>

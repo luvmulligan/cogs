@@ -1,15 +1,15 @@
 <div class="card business-form">
-  <h3>Crear Nuevo Negocio</h3>
+  <h3>{{ t.businessFormTitle }}</h3>
   
   <form [formGroup]="businessForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label for="name">Nombre del Negocio *</label>
+      <label for="name">{{ t.businessName }} *</label>
       <input 
         type="text" 
         id="name"
         class="form-control" 
         formControlName="name"
-        placeholder="Ej: Mi Panadería">
+        [placeholder]="t.businessNamePlaceholder">
       <small class="error" *ngIf="businessForm.get('name')?.invalid && businessForm.get('name')?.touched">
         El nombre es requerido (mínimo 3 caracteres)
       </small>
@@ -32,20 +32,20 @@
     </div>
 
     <div class="form-group">
-      <label for="description">Descripción (opcional)</label>
+      <label for="description">{{ t.description }} ({{ t.optional }})</label>
       <textarea 
         id="description"
         class="form-control" 
         formControlName="description"
         rows="3"
-        placeholder="Describe tu negocio"></textarea>
+        [placeholder]="t.descriptionPlaceholder"></textarea>
     </div>
 
     <button 
       type="submit" 
       class="btn btn-success"
       [disabled]="businessForm.invalid">
-      Crear Negocio
+      {{ t.addBusinessButton }}
     </button>
   </form>
 </div>

@@ -1,5 +1,5 @@
 <div class="container">
-  <h2><span class="material-icons icon-calc">calculate</span> Calculadora de Costos</h2>
+  <h2><span class="material-icons icon-calc">calculate</span> {{ t.calculatorTitle }}</h2>
   
   <div class="info-banner card">
     <strong><span class="material-icons icon-tip">lightbulb</span> Consejo:</strong> 
@@ -25,12 +25,12 @@
       </div>
 
       <!-- Información del producto -->
-      <h3>Información del Producto</h3>
+      <h3>{{ t.productName }}</h3>
       
       <div class="form-group">
-        <label for="businessId">Negocio *</label>
+        <label for="businessId">{{ t.selectBusiness }} *</label>
         <select id="businessId" class="form-control" formControlName="businessId">
-          <option value="">Selecciona un negocio</option>
+          <option value="">{{ t.selectBusinessPlaceholder }}</option>
           <option *ngFor="let business of businesses" [value]="business.id">
             {{ business.name }}
           </option>
@@ -42,13 +42,13 @@
 
       <!-- Selector de producto existente -->
       <div class="form-group" *ngIf="mode === 'existing'">
-        <label for="existingProductId">Seleccionar Producto *</label>
+        <label for="existingProductId">{{ t.selectProduct }} *</label>
         <select 
           id="existingProductId" 
           class="form-control" 
           formControlName="existingProductId"
           (change)="onProductSelect($event)">
-          <option value="">Selecciona un producto</option>
+          <option value="">{{ t.selectProductPlaceholder }}</option>
           <option *ngFor="let product of getProductsByBusiness()" [value]="product.id">
             {{ product.name }}
           </option>
@@ -62,7 +62,7 @@
       <div class="product-info-card" *ngIf="mode === 'existing' && selectedProduct">
         <h4>{{ selectedProduct.name }}</h4>
         <p *ngIf="selectedProduct.description">{{ selectedProduct.description }}</p>
-        <p><strong>Margen actual:</strong> {{ selectedProduct.targetMargin }}%</p>
+        <p><strong>{{ t.margin }}:</strong> {{ selectedProduct.targetMargin }}%</p>
         
         <!-- Costos existentes -->
         <div class="existing-costs" *ngIf="existingCosts.length > 0">
@@ -83,28 +83,28 @@
       <!-- Campos para nuevo producto -->
       <div *ngIf="mode === 'new'">
         <div class="form-group">
-          <label for="productName">Nombre del Producto *</label>
+          <label for="productName">{{ t.productName }} *</label>
           <input 
             type="text" 
             id="productName"
             class="form-control" 
             formControlName="productName"
-            placeholder="Ej: Pastel de Chocolate">
+            [placeholder]="t.productNamePlaceholder">
         </div>
 
         <div class="form-group">
-          <label for="productDescription">Descripción (opcional)</label>
+          <label for="productDescription">{{ t.description }} ({{ t.optional }})</label>
           <textarea 
             id="productDescription"
             class="form-control" 
             formControlName="productDescription"
             rows="2"
-            placeholder="Breve descripción del producto"></textarea>
+            [placeholder]="t.descriptionPlaceholder"></textarea>
         </div>
 
         <div class="form-group">
           <label for="expectedMonthlyUnits">
-            Unidades Esperadas por Mes *
+            {{ t.expectedUnits }} *
             <span class="material-icons info-icon" title="Cuántas unidades de este producto esperas vender mensualmente">info</span>
           </label>
           <input 
@@ -122,7 +122,7 @@
       </div>
 
       <div class="form-group">
-        <label for="targetMargin">Margen de Ganancia Objetivo (%) *</label>
+        <label for="targetMargin">{{ t.profitMargin }} *</label>
         <input 
           type="number" 
           id="targetMargin"

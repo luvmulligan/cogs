@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { EducationalContent, EducationCategory } from '../models/business.model';
+import { LanguageService } from './language.service';
+import { educationContentEN } from './education-content-en';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EducationService {
-  private contents: EducationalContent[] = [
+  constructor(private languageService: LanguageService) {}
+
+  private contentsES: EducationalContent[] = [
     {
       id: '1',
       title: 'Costos Fijos: ¿Qué son y cómo identificarlos?',
@@ -501,33 +505,37 @@ Costo fijo por pan = $10,166.67 / 1,000 = $10.17 por pan
     }
   ];
 
-  constructor() {}
+  private getContents(): EducationalContent[] {
+    const lang = this.languageService.getCurrentLanguage();
+    return lang === 'en' ? educationContentEN : this.contentsES;
+  }
 
   getAllContent(): EducationalContent[] {
-    return this.contents;
+    return this.getContents();
   }
 
   getContentById(id: string): EducationalContent | undefined {
-    return this.contents.find(c => c.id === id);
+    return this.getContents().find(c => c.id === id);
   }
 
   getContentByCategory(category: EducationCategory): EducationalContent[] {
-    return this.contents.filter(c => c.category === category);
+    return this.getContents().filter(c => c.category === category);
   }
 
   getContentByDifficulty(difficulty: 'beginner' | 'intermediate' | 'advanced'): EducationalContent[] {
-    return this.contents.filter(c => c.difficulty === difficulty);
+    return this.getContents().filter(c => c.difficulty === difficulty);
   }
 
   getCategoryLabel(category: EducationCategory): string {
+    const t = this.languageService.getTranslations();
     const labels: { [key in EducationCategory]: string } = {
-      [EducationCategory.FIXED_COSTS]: 'Costos Fijos',
-      [EducationCategory.VARIABLE_COSTS]: 'Costos Variables',
-      [EducationCategory.PRICING]: 'Fijación de precios',
-      [EducationCategory.PROFIT_MARGIN]: 'Margen de Ganancia',
-      [EducationCategory.BREAK_EVEN]: 'Punto de Equilibrio',
-      [EducationCategory.CASH_FLOW]: 'Flujo de Caja',
-      [EducationCategory.ASSETS]: 'Activos e Inversiones'
+      [EducationCategory.FIXED_COSTS]: t.categoryCosts,
+      [EducationCategory.VARIABLE_COSTS]: t.categoryCosts,
+      [EducationCategory.PRICING]: t.categoryPricing,
+      [EducationCategory.PROFIT_MARGIN]: t.categoryMargins,
+      [EducationCategory.BREAK_EVEN]: t.categoryAnalysis,
+      [EducationCategory.CASH_FLOW]: t.categoryAnalysis,
+      [EducationCategory.ASSETS]: t.categoryAssets
     };
     return labels[category];
   }

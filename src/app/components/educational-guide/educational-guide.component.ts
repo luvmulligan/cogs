@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EducationService } from '../../services/education.service';
+import { LanguageService, Translations } from '../../services/language.service';
 import { EducationalContent, EducationCategory } from '../../models/business.model';
 
 @Component({
@@ -14,6 +15,7 @@ export class EducationalGuideComponent implements OnInit {
   selectedContent: EducationalContent | null = null;
   selectedCategory: EducationCategory | 'all' = 'all';
   selectedDifficulty: 'all' | 'beginner' | 'intermediate' | 'advanced' = 'all';
+  t: Translations;
 
   categories = [
     { value: 'all', label: 'Todos los Temas' },
@@ -32,9 +34,17 @@ export class EducationalGuideComponent implements OnInit {
     { value: 'advanced', label: 'Avanzado' }
   ];
 
-  constructor(private educationService: EducationService) {}
+  constructor(
+    private educationService: EducationService,
+    private languageService: LanguageService
+  ) {
+    this.t = this.languageService.getTranslations();
+  }
 
   ngOnInit(): void {
+    this.languageService.language$.subscribe(() => {
+      this.t = this.languageService.getTranslations();
+    });
     this.allContents = this.educationService.getAllContent();
     this.applyFilters();
   }
