@@ -7,6 +7,9 @@ import { Observable } from 'rxjs';
 import { User } from '@angular/fire/auth';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
+import { BadgeModule } from 'primeng/badge';
+import { Ripple } from 'primeng/ripple';
+import { AvatarModule } from 'primeng/avatar';
 
 
 
@@ -15,13 +18,15 @@ import { MenuItem } from 'primeng/api';
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
     standalone: true,
-    imports: [CommonModule, RouterLink, MenubarModule]
+    imports: [CommonModule, RouterLink, MenubarModule, BadgeModule, Ripple, AvatarModule],
+    
 })
 export class HeaderComponent implements OnInit {
   user$: Observable<User | null>;
   t: Translations;
   currentLanguage: Language;
    items: MenuItem[] | undefined;
+   userMenuItem: MenuItem[] | undefined;
    email!: string;
 
   constructor(
@@ -52,7 +57,7 @@ export class HeaderComponent implements OnInit {
       {
         label: 'Panel',
         icon: 'pi pi-objects-column',
-        routerLink: '/dashboard'
+        routerLink: '/dashboard',
       },
       {
         label: 'Calculadora',
@@ -68,7 +73,10 @@ export class HeaderComponent implements OnInit {
         label: 'Guía',
         icon: 'pi pi-book',
         routerLink: '/education'
-      },
+      }
+    ];
+
+    this.userMenuItem = [
       {
         label: '',
         icon: 'pi pi-user',
@@ -82,7 +90,7 @@ export class HeaderComponent implements OnInit {
             separator: true
           },
           {
-            label: this.currentLanguage === 'es' ? 'Cambiar a English' : 'Switch to Español',
+            label: this.currentLanguage === 'es' ? 'English' : 'Español',
             icon: 'pi pi-globe',
             command: () => this.toggleLanguage()
           },
