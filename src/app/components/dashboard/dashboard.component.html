@@ -1,28 +1,33 @@
 <div class="container">
-  <div class="dashboard-header">
-    <h2><span class="material-icons">dashboard</span>{{ t.dashboard }}</h2>
-    <button class="btn btn-primary" (click)="toggleBusinessForm()">
-      {{ showBusinessForm ? t.cancel : '+ ' + t.createBusiness }}
-    </button>
+  <div *ngIf="loading" style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+    <p-progress-spinner ariaLabel="loading" />
   </div>
 
-  <!-- Formulario de nuevo negocio -->
-  <app-business-form 
-    *ngIf="showBusinessForm"
-    (businessCreated)="onBusinessCreated()">
-  </app-business-form>
+  <div *ngIf="!loading">
+    <div class="dashboard-header">
+      <h2><span class="material-icons">dashboard</span>{{ t.dashboard }}</h2>
+      <button class="btn btn-primary" (click)="toggleBusinessForm()">
+        {{ showBusinessForm ? t.cancel : '+ ' + t.createBusiness }}
+      </button>
+    </div>
 
-  <!-- Sin negocios -->
-  <div class="empty-state card" *ngIf="businesses.length === 0 && !showBusinessForm">
-    <h3>¡Bienvenido a AppCogs!</h3>
-    <p>Comienza creando tu primer negocio para empezar a gestionar costos y calcular precios.</p>
-    <button class="btn btn-primary" (click)="toggleBusinessForm()">
-      {{ t.createBusiness }}
-    </button>
-  </div>
+    <!-- Formulario de nuevo negocio -->
+    <app-business-form 
+      *ngIf="showBusinessForm"
+      (businessCreated)="onBusinessCreated()">
+    </app-business-form>
+    
+    <!-- Sin negocios -->
+    <div class="empty-state card" *ngIf="businesses.length === 0 && !showBusinessForm && !loading">
+      <h3>¡Bienvenido a AppCogs!</h3>
+      <p>Comienza creando tu primer negocio para empezar a gestionar costos y calcular precios.</p>
+      <button class="btn btn-primary" (click)="toggleBusinessForm()">
+        {{ t.createBusiness }}
+      </button>
+    </div>
 
-  <!-- Dashboard principal -->
-  <div *ngIf="businesses.length > 0 && !showBusinessForm">
+    <!-- Dashboard principal -->
+    <div *ngIf="businesses.length > 0 && !showBusinessForm">
     <!-- Selector de negocio -->
     <div class="business-selector card" *ngIf="businesses.length > 1">
       <label>{{ t.selectBusiness }}:</label>

@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { LanguageService, Translations } from '../../services/language.service';
 
@@ -7,7 +8,8 @@ import { LanguageService, Translations } from '../../services/language.service';
     selector: 'app-business-form',
     templateUrl: './business-form.component.html',
     styleUrls: ['./business-form.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule]
 })
 export class BusinessFormComponent implements OnInit {
   @Output() businessCreated = new EventEmitter<void>();

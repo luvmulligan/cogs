@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { EducationService } from '../../services/education.service';
 import { LanguageService, Translations } from '../../services/language.service';
 import { EducationalContent, EducationCategory } from '../../models/business.model';
@@ -7,7 +9,8 @@ import { EducationalContent, EducationCategory } from '../../models/business.mod
     selector: 'app-educational-guide',
     templateUrl: './educational-guide.component.html',
     styleUrls: ['./educational-guide.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule]
 })
 export class EducationalGuideComponent implements OnInit {
   allContents: EducationalContent[] = [];

@@ -1,18 +1,25 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
 import { LanguageService, Translations } from '../../services/language.service';
 import { Business, Product, BusinessFixedCost, CostType, Asset, AssetType } from '../../models/business.model';
+import { BusinessFormComponent } from '../business-form/business-form.component';
+import { ProductFormComponent } from '../product-form/product-form.component';
 import { Subscription } from 'rxjs';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule, BusinessFormComponent, ProductFormComponent, ProgressSpinnerModule]
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
-  businesses: Business[] = [];
+  loading: boolean = true;
+  businesses!: Business[];
   products: Product[] = [];
   businessFixedCosts: BusinessFixedCost[] = [];
   assets: Asset[] = [];
@@ -58,7 +65,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.t = this.languageService.getTranslations();
       this.updateAssetTypeLabels();
     });
-    this.loadData();
+    setTimeout(() =>{this.loadData();this.loading = false}, 2000)
+    
   }
   
   updateAssetTypeLabels(): void {
@@ -82,6 +90,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadData(): void {
+    this.loading = true;
+    
     // Suscribirse a los cambios de negocios
     const businessSub = this.businessService.businesses$.subscribe(businesses => {
       this.businesses = businesses;
@@ -91,6 +101,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.loadBusinessFixedCosts();
       this.calculateStats();
       this.refreshChart();
+      this.loading = false;
     });
 
     // Suscribirse a los cambios de productos

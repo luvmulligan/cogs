@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { LanguageService, Translations } from '../../services/language.service';
 
@@ -7,7 +9,8 @@ import { LanguageService, Translations } from '../../services/language.service';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  standalone: false
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class LoginComponent implements OnInit {
   email: string = '';

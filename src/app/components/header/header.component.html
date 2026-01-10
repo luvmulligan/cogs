@@ -1,11 +1,10 @@
 <header class="header">
   <div class="header-container">
-    <div class="logo">
+    <!-- <div class="logo">
       <h1><span class="material-icons">settings_applications</span> AppCogs</h1>
       <span class="subtitle">{{ t.appTitle }}</span>
-    </div>
-    
-    <nav class="nav">
+    </div> -->
+    <!-- <nav class="nav">
       <a routerLink="/dashboard" 
          class="nav-link" 
          [class.active]="isActive('/dashboard')">
@@ -37,6 +36,9 @@
       <button class="btn-logout" (click)="logout()">
         <span class="material-icons">logout</span> {{ t.logout }}
       </button>
-    </div>
+    </div> -->
   </div>
+
+      <p-menubar [model]="items" />
+
 </header>

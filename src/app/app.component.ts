@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { MigrationService } from './services/migration.service';
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [RouterOutlet, HeaderComponent]
 })
 export class AppComponent implements OnInit {
   title = 'AppCogs - Gestión de Costos';

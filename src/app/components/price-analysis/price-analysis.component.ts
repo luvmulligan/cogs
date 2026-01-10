@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
 import { LanguageService, Translations } from '../../services/language.service';
@@ -9,7 +11,8 @@ import { Subscription } from 'rxjs';
     selector: 'app-price-analysis',
     templateUrl: './price-analysis.component.html',
     styleUrls: ['./price-analysis.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule]
 })
 export class PriceAnalysisComponent implements OnInit, OnDestroy {
   products: Product[] = [];

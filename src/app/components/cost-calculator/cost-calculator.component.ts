@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
 import { PricingService } from '../../services/pricing.service';
 import { LanguageService, Translations } from '../../services/language.service';
@@ -10,7 +11,8 @@ import { Subscription } from 'rxjs';
     selector: 'app-cost-calculator',
     templateUrl: './cost-calculator.component.html',
     styleUrls: ['./cost-calculator.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class CostCalculatorComponent implements OnInit, OnDestroy {
   calculatorForm: FormGroup;
