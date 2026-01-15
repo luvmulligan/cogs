@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
@@ -9,21 +9,33 @@ import { BusinessFormComponent } from '../business-form/business-form.component'
 import { ProductFormComponent } from '../product-form/product-form.component';
 import { Subscription } from 'rxjs';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DialogModule } from 'primeng/dialog';
+import { FieldsetModule } from 'primeng/fieldset';
+import { SelectModule } from 'primeng/select';
+import { PanelModule } from 'primeng/panel';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule, BusinessFormComponent, ProductFormComponent, ProgressSpinnerModule]
+    encapsulation: ViewEncapsulation.None,
+    imports: [CommonModule, FormsModule, BusinessFormComponent, ProgressSpinnerModule, SelectButtonModule, ButtonModule, DialogModule, FieldsetModule, SelectModule, PanelModule, MenuModule, DrawerModule]
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   loading: boolean = true;
   businesses!: Business[];
+  businessesOptions: any = [];
   products: Product[] = [];
   businessFixedCosts: BusinessFixedCost[] = [];
   assets: Asset[] = [];
   selectedBusiness: Business | null = null;
+  visible: boolean = false;
   t: Translations;
   stats = {
     totalProducts: 0,
@@ -48,6 +60,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   assetTypes = Object.values(AssetType);
   assetTypeLabels: { [key: string]: string } = {};
+  visibleGastosFijos: boolean = false;
+  visibleAssets: boolean = false;
   private subscriptions: Subscription[] = [];
   @ViewChild('expenseChart', { static: false }) expenseChartRef?: ElementRef<HTMLCanvasElement>;
 
@@ -66,7 +80,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.updateAssetTypeLabels();
     });
     setTimeout(() =>{this.loadData();this.loading = false}, 2000)
-    
+
+
   }
   
   updateAssetTypeLabels(): void {
@@ -95,6 +110,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // Suscribirse a los cambios de negocios
     const businessSub = this.businessService.businesses$.subscribe(businesses => {
       this.businesses = businesses;
+      this.updateBusinessesOptions(); // Actualizar opciones cuando cambien los negocios
       if (this.businesses.length > 0 && !this.selectedBusiness) {
         this.selectedBusiness = this.businesses[0];
       }
@@ -126,6 +142,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.subscriptions.push(businessSub, productsSub, fixedCostsSub, assetsSub);
+  }
+  updateBusinessesOptions(): void {
+    this.businessesOptions = this.businesses.map(business => ({
+      label: business.name,
+      value: business
+    }));
   }
 
   loadBusinessFixedCosts(): void {
@@ -178,8 +200,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.refreshChart();
   }
 
+  onBusinessChange(): void {
+    if (this.selectedBusiness) {
+      this.loadBusinessFixedCosts();
+      this.loadAssets();
+      this.calculateStats();
+      this.refreshChart();
+    }
+  }
+
   toggleBusinessForm(): void {
     this.showBusinessForm = !this.showBusinessForm;
+    this.visible = !this.visible;
   }
 
   onBusinessCreated(): void {

@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -21,12 +21,53 @@
     margin-bottom: 2rem;
   }
 }
+.nuevo-negocio {
+    width: 600px;
+    margin: auto;
+  
+}
 
+.p-fieldset-legend-label{
+  font-weight: 500;
+}
 .business-selector {
   label {
     display: block;
     margin-bottom: 1rem;
-    font-weight: 600;
+    font-weight: 500;
+  }
+  p-button{
+    display: block;
+    
+    margin-top: 1rem;
+  }
+
+  .desktop-only {
+    display: block;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  p-select {
+    width: 100%;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .desktop-only {
+      display: none;
+    }
+
+    .mobile-only {
+      display: flex;
+      width: 100%;
+      margin-bottom: 1rem;
+      .p-select-label{
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -142,7 +183,7 @@
         flex-wrap: wrap;
 
         strong {
-          font-weight: 600;
+          font-weight: 500;
         }
 
         .cost-type-badge {
@@ -155,7 +196,7 @@
       }
 
       .cost-value {
-        font-weight: 600;
+        font-weight: 500;
         color: var(--primary-color);
         white-space: nowrap;
       }
@@ -408,7 +449,7 @@
     }
 
     .legend-category {
-      font-weight: 600;
+      font-weight: 500;
       color: var(--text-dark);
       font-size: 0.95rem;
     }
@@ -421,7 +462,7 @@
     .legend-percentage {
       color: var(--secondary-color);
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .legend-total {
@@ -644,7 +685,7 @@
         }
 
         .stat-value {
-          font-weight: 600;
+          font-weight: 500;
           color: var(--text-color);
         }
 
@@ -729,7 +770,7 @@
         }
 
         label {
-          font-weight: 600;
+          font-weight: 500;
           font-size: 0.9rem;
         }
 
@@ -759,4 +800,14 @@
       }
     }
   }
+}
+.gastos-fijos {
+  width: 32rem;
+}
+
+.assets{
+  width: 32rem;
+}
+.p-drawer-right {
+  width: 32rem!important;
 }

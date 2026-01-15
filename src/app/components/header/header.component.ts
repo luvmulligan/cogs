@@ -18,7 +18,7 @@ import { AvatarModule } from 'primeng/avatar';
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
     standalone: true,
-    imports: [CommonModule, RouterLink, MenubarModule, BadgeModule, Ripple, AvatarModule],
+    imports: [CommonModule, MenubarModule, BadgeModule, AvatarModule],
     
 })
 export class HeaderComponent implements OnInit {
@@ -75,7 +75,7 @@ export class HeaderComponent implements OnInit {
         routerLink: '/education'
       }
     ];
-
+  
     this.userMenuItem = [
       {
         label: '',

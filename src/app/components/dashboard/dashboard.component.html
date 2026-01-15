@@ -5,18 +5,10 @@
 
   <div *ngIf="!loading">
     <div class="dashboard-header">
-      <h2>{{ t.dashboard }}</h2>
-      <button class="btn btn-primary" (click)="toggleBusinessForm()">
-        {{ showBusinessForm ? t.cancel : '+ ' + t.createBusiness }}
-      </button>
+      <h2 *ngIf="!showBusinessForm">{{ t.dashboard }}</h2>
+ 
     </div>
 
-    <!-- Formulario de nuevo negocio -->
-    <app-business-form 
-      *ngIf="showBusinessForm"
-      (businessCreated)="onBusinessCreated()">
-    </app-business-form>
-    
     <!-- Sin negocios -->
     <div class="empty-state card" *ngIf="businesses.length === 0 && !showBusinessForm && !loading">
       <h3>¡Bienvenido a AppCogs!</h3>
@@ -30,19 +22,34 @@
     <div *ngIf="businesses.length > 0 && !showBusinessForm">
     <!-- Selector de negocio -->
     <div class="business-selector card" *ngIf="businesses.length > 1">
-      <label>{{ t.selectBusiness }}:</label>
-      <div class="business-buttons">
-        <button 
-          *ngFor="let business of businesses"
-          class="business-btn"
-          [class.active]="selectedBusiness?.id === business.id"
-          (click)="selectBusiness(business)">
-          {{ business.name }}
-        </button>
-      </div>
+      <p-fieldset legend="{{ t.selectBusiness }}">
+        <!-- Desktop: SelectButton -->
+        <p-selectbutton 
+          class="desktop-only"
+          [options]="businessesOptions" 
+          [(ngModel)]="selectedBusiness" 
+          optionLabel="label" 
+          optionValue="value"
+          (onChange)="onBusinessChange()"
+          aria-labelledby="basic" />
+        
+        <!-- Mobile: Dropdown -->
+        <p-select
+          class="mobile-only"
+          [options]="businessesOptions"
+          [(ngModel)]="selectedBusiness"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="onBusinessChange()"
+          placeholder="{{ t.selectBusiness }}" />
+        
+        <p-button icon="pi pi-plus" aria-label="Crear negocio" label="Crear negocio" (onClick)="toggleBusinessForm()" severity="info"></p-button>
+      </p-fieldset>
     </div>
 
     <!-- Información del negocio actual -->
+
+
     <div class="business-info card" *ngIf="selectedBusiness">
       <div class="business-header">
         <div>
@@ -52,18 +59,142 @@
             {{ selectedBusiness.description }}
           </p>
         </div>
-        <button class="btn btn-secondary" (click)="showFixedCostsForm = !showFixedCostsForm">
+        <button class="btn btn-secondary" (click)="visibleGastosFijos = true">
           <span class="material-icons">settings</span>
           {{ showFixedCostsForm ? t.close : t.manageFixedCosts }}
         </button>
-        <button class="btn btn-secondary" (click)="toggleAssetsForm()">
+        <button class="btn btn-secondary" (click)="visibleAssets = true">
           <span class="material-icons">inventory_2</span>
           {{ showAssetsForm ? t.close : t.manageAssets }}
         </button>
+
+        
       </div>
 
-      <!-- Costos Fijos del Negocio -->
-      <div class="fixed-costs-section" *ngIf="showFixedCostsForm">
+   
+
+  
+    </div>
+
+    <!-- Gráfico de Gastos por Categoría -->
+    <div class="expense-chart-section card">
+      <h4>
+        <span class="material-icons">pie_chart</span>
+        Distribución de Gastos Mensuales por Categoría
+      </h4>
+      <div class="chart-container">
+        <div class="chart-canvas-wrapper">
+          <canvas #expenseChart width="300" height="300"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item" *ngFor="let expense of getExpensesByCategory()">
+            <div class="legend-color" [style.background-color]="expense.color"></div>
+            <div class="legend-label">
+              <span class="legend-category">{{ expense.category }}</span>
+              <span class="legend-amount">${{ expense.amount | number:'1.2-2' }}</span>
+              <span class="legend-percentage">
+                {{ getExpensePercentage(expense.amount) | number:'1.0-0' }}%
+              </span>
+            </div>
+          </div>
+          <div class="legend-total">
+            <strong>Total Mensual:</strong>
+            <strong class="total-amount">
+              ${{ getTotalExpenses() | number:'1.2-2' }}
+            </strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid grid grid-3">
+      <div class="stat-card card">
+        <div class="stat-icon"><span class="material-icons bigger--icon">inventory_2</span></div>
+        <div class="stat-value">{{ stats.totalProducts }}</div>
+        <div class="stat-label">{{ t.products }}</div>
+      </div>
+
+      <div class="stat-card card">
+        <div class="stat-icon"><span class="material-icons bigger--icon">data_thresholding</span></div>
+        <div class="stat-value">{{ stats.avgMargin | number:'1.1-1' }}%</div>
+        <div class="stat-label">{{ t.margin }}</div>
+      </div>
+
+      <div class="stat-card card">
+        <div class="stat-icon"><span class="material-icons bigger--icon">check_box</span></div>
+        <div class="stat-value">{{ stats.profitableProducts }}/{{ stats.totalProducts }}</div>
+        <div class="stat-label">Productos Rentables</div>
+      </div>
+    </div>
+
+    <!-- Lista de productos -->
+    <div class="products-section card">
+      <div class="section-header">
+        <h3>{{ t.products }}</h3>
+        <a routerLink="/calculator" class="btn btn-primary">+ {{ t.addProduct }}</a>
+      </div>
+
+      <div class="products-list" *ngIf="getProductsForBusiness().length > 0">
+        <div class="product-item" *ngFor="let product of getProductsForBusiness()">
+          <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-details">
+              <span class="product-margin">{{ t.margin }}: {{ product.targetMargin }}%</span>
+              <span class="product-units" *ngIf="product.expectedMonthlyUnits">
+                {{ product.expectedMonthlyUnits }} {{ t.expectedUnits }}
+              </span>
+              <span class="product-units warning" *ngIf="!product.expectedMonthlyUnits">
+                ⚠️ Sin unidades esperadas
+              </span>
+            </div>
+          </div>
+          <button class="btn-icon" (click)="editProductUnits(product)" [title]="t.edit">
+            <span class="material-icons">edit</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-products" *ngIf="getProductsForBusiness().length === 0">
+        <p>No hay productos registrados aún.</p>
+        <a routerLink="/calculator" class="btn btn-success">{{ t.addProduct }}</a>
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="quick-actions grid grid-3">
+      <a routerLink="/calculator" class="action-card card">
+        <div class="action-icon"><span class="material-icons bigger--icon">calculate</span></div>
+        <h4>{{ t.calculator }}</h4>
+        <p>{{ t.calculatorSubtitle }}</p>
+      </a>
+
+      <a routerLink="/analysis" class="action-card card">
+        <div class="action-icon"><span class="material-icons bigger--icon">payments</span></div>
+        <h4>{{ t.analysis }}</h4>
+        <p>{{ t.analysisSubtitle }}</p>
+      </a>
+
+      <a routerLink="/education" class="action-card card">
+        <div class="action-icon"><span class="material-icons bigger--icon">menu_book</span></div>
+        <h4>{{ t.education }}</h4>
+        <p>{{ t.guideSubtitle }}</p>
+      </a>
+    </div>
+  </div>
+</div>
+<p-dialog header="Nuevo negocio" [modal]="true" [(visible)]="showBusinessForm" [maximizable]="false" (onHide)="showBusinessForm=false">
+   <div class="nuevo-negocio">
+    <app-business-form 
+
+      (businessCreated)="onBusinessCreated()">
+    </app-business-form>
+    </div>
+</p-dialog>
+
+<p-drawer header=" {{ t.fixedCostsTitle }}" [(visible)]="visibleGastosFijos" position="right" styleClass="gastos-fijos">
+   <!-- Costos Fijos del Negocio -->
+      <div class="fixed-costs-section">
         <h4><span class="material-icons">account_balance</span> {{ t.fixedCostsTitle }}</h4>
         <p class="info-text">
           <span class="material-icons icon-tip">info</span>
@@ -113,9 +244,11 @@
           </div>
         </div>
       </div>
+</p-drawer>
 
-      <!-- Activos e Inversiones -->
-      <div class="assets-section" *ngIf="showAssetsForm">
+<p-drawer header=" {{ t.assetsTitle }}" [(visible)]="visibleAssets" position="right" styleClass="assets">
+    <!-- Activos e Inversiones -->
+      <div class="assets-section" >
         <h4><span class="material-icons">inventory_2</span> {{ t.assetsTitle }}</h4>
         <p class="info-text">
           <span class="material-icons icon-tip">info</span>
@@ -234,112 +367,4 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Gráfico de Gastos por Categoría -->
-    <div class="expense-chart-section card">
-      <h4>
-        <span class="material-icons">pie_chart</span>
-        Distribución de Gastos Mensuales por Categoría
-      </h4>
-      <div class="chart-container">
-        <div class="chart-canvas-wrapper">
-          <canvas #expenseChart width="300" height="300"></canvas>
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item" *ngFor="let expense of getExpensesByCategory()">
-            <div class="legend-color" [style.background-color]="expense.color"></div>
-            <div class="legend-label">
-              <span class="legend-category">{{ expense.category }}</span>
-              <span class="legend-amount">${{ expense.amount | number:'1.2-2' }}</span>
-              <span class="legend-percentage">
-                {{ getExpensePercentage(expense.amount) | number:'1.0-0' }}%
-              </span>
-            </div>
-          </div>
-          <div class="legend-total">
-            <strong>Total Mensual:</strong>
-            <strong class="total-amount">
-              ${{ getTotalExpenses() | number:'1.2-2' }}
-            </strong>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Estadísticas -->
-    <div class="stats-grid grid grid-3">
-      <div class="stat-card card">
-        <div class="stat-icon"><span class="material-icons bigger--icon">inventory_2</span></div>
-        <div class="stat-value">{{ stats.totalProducts }}</div>
-        <div class="stat-label">{{ t.products }}</div>
-      </div>
-
-      <div class="stat-card card">
-        <div class="stat-icon"><span class="material-icons bigger--icon">data_thresholding</span></div>
-        <div class="stat-value">{{ stats.avgMargin | number:'1.1-1' }}%</div>
-        <div class="stat-label">{{ t.margin }}</div>
-      </div>
-
-      <div class="stat-card card">
-        <div class="stat-icon"><span class="material-icons bigger--icon">check_box</span></div>
-        <div class="stat-value">{{ stats.profitableProducts }}/{{ stats.totalProducts }}</div>
-        <div class="stat-label">Productos Rentables</div>
-      </div>
-    </div>
-
-    <!-- Lista de productos -->
-    <div class="products-section card">
-      <div class="section-header">
-        <h3>{{ t.products }}</h3>
-        <a routerLink="/calculator" class="btn btn-primary">+ {{ t.addProduct }}</a>
-      </div>
-
-      <div class="products-list" *ngIf="getProductsForBusiness().length > 0">
-        <div class="product-item" *ngFor="let product of getProductsForBusiness()">
-          <div class="product-info">
-            <div class="product-name">{{ product.name }}</div>
-            <div class="product-details">
-              <span class="product-margin">{{ t.margin }}: {{ product.targetMargin }}%</span>
-              <span class="product-units" *ngIf="product.expectedMonthlyUnits">
-                {{ product.expectedMonthlyUnits }} {{ t.expectedUnits }}
-              </span>
-              <span class="product-units warning" *ngIf="!product.expectedMonthlyUnits">
-                ⚠️ Sin unidades esperadas
-              </span>
-            </div>
-          </div>
-          <button class="btn-icon" (click)="editProductUnits(product)" [title]="t.edit">
-            <span class="material-icons">edit</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="empty-products" *ngIf="getProductsForBusiness().length === 0">
-        <p>No hay productos registrados aún.</p>
-        <a routerLink="/calculator" class="btn btn-success">{{ t.addProduct }}</a>
-      </div>
-    </div>
-
-    <!-- Accesos rápidos -->
-    <div class="quick-actions grid grid-3">
-      <a routerLink="/calculator" class="action-card card">
-        <div class="action-icon"><span class="material-icons bigger--icon">calculate</span></div>
-        <h4>{{ t.calculator }}</h4>
-        <p>{{ t.calculatorSubtitle }}</p>
-      </a>
-
-      <a routerLink="/analysis" class="action-card card">
-        <div class="action-icon"><span class="material-icons bigger--icon">payments</span></div>
-        <h4>{{ t.analysis }}</h4>
-        <p>{{ t.analysisSubtitle }}</p>
-      </a>
-
-      <a routerLink="/education" class="action-card card">
-        <div class="action-icon"><span class="material-icons bigger--icon">menu_book</span></div>
-        <h4>{{ t.education }}</h4>
-        <p>{{ t.guideSubtitle }}</p>
-      </a>
-    </div>
-  </div>
-</div>
+</p-drawer>

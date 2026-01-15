@@ -21,13 +21,60 @@
   gap: 0.5rem;
 }
 
-::ng-deep .p-menubar-submenu {
-  right: 13px !important;
-}
 ::ng-deep .p-menubar{
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+}
+
+// Evitar que el menú de usuario se convierta en hamburguesa en mobile
+::ng-deep .user-menu-only {
+  .p-menubar-button {
+    display: none !important;
+  }
+  
+  .p-menubar-root-list {
+    display: flex !important;
+    flex-direction: row !important;
+    position: static !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: auto !important;
+  }
+  
+  // Asegurar que el contenedor del menubar no se expanda
+  .p-menubar {
+    width: auto !important;
+    flex: 0 0 auto !important;
+  }
+
+  // Expandir el submenu hacia la izquierda
+  .p-menubar-submenu {
+    transform-origin: top right !important;
+  }
+  
+  @media (max-width: 960px) {
+    .p-menubar-root-list {
+      display: block !important;
+      justify-content: flex-end !important;
+    }
+    .p-menubar-mobile .p-menubar-submenu {
+    width: 100%;
+    position: absolute;
+    box-shadow: none;
+    border: 0 none;
+    padding-inline-start: unset;
+    padding-inline-end: 4px;
+    // right: 21px;
+    right: 0px;
+}
+  }
+  @media (min-width: 1240px) {
+    .p-menubar-submenu {
+      right: 0px !important;
+    }}
 }
 
 .logo {

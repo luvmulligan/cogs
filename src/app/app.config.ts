@@ -23,7 +23,11 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth()),
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+          darkModeSelector: false,
+          cssLayer: false
+        }
       }
     })
   ]
