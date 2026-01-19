@@ -1,14 +1,17 @@
+/* Importar PrimeFlex */
+@import 'primeflex/primeflex.css';
+
 /* Estilos globales */
 :root {
   --primary-color: #2c3e50;
   --secondary-color: #3498db;
   --success-color: #27ae60;
-  --warning-color: #f39c12;
+  --warning-color: #d68910;
   --danger-color: #e74c3c;
   --light-bg: #ecf0f1;
   --white: #ffffff;
   --text-dark: #2c3e50;
-  --text-light: #7f8c8d;
+  --text-light: #5a6c7d;
   --border-color: #bdc3c7;
 }
 
@@ -281,13 +284,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .p-selectbutton .p-button.p-highlight {
-  background-color: #3498db !important;
-  border-color: #3498db !important;
+  background-color: #1d6494 !important;
+  border-color: #1d6494 !important;
   color: #ffffff !important;
 }
 
 .p-selectbutton .p-button.p-highlight:hover {
-  background-color: #2980b9 !important;
+  background-color: #1d6494 !important;
   border-color: #2980b9 !important;
 }
+
 }

@@ -101,13 +101,14 @@
     }
     
     .cost-type {
-      color: var(--text-light);
+      color: var(--text-dark);
+      opacity: 0.75;
       font-size: 0.9rem;
       min-width: 100px;
     }
     
     .cost-value {
-      color: var(--success-color);
+      color: #1e8449;
       font-weight: 600;
     }
   }
@@ -131,21 +132,19 @@
 
 .calculator-container {
   display: grid;
-  grid-template-columns: 1fr 350px;
+  // grid-template-columns: 1fr 350px;
   gap: 2rem;
   align-items: start;
 }
 
 .costs-section {
-  margin-top: 2rem;
-  padding-top: 2rem;
+  // padding-top: 2rem;
   border-top: 2px solid var(--border-color);
   
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
     
     h3 {
       margin-bottom: 0;
@@ -160,9 +159,10 @@
 
 .cost-item {
   padding: 1.5rem;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--p-surface-50);
   border-radius: 8px;
-  background: #fafafa;
+  background-color: var(--p-surface-50);
+
   
   .cost-header {
     display: flex;
@@ -209,7 +209,7 @@
 
 .cost-unit-info {
   display: block;
-  color: var(--success-color);
+  color: #1e8449;
   font-weight: 600;
   margin-top: 0.25rem;
 }
@@ -222,7 +222,7 @@
 
 .highlight-card {
   background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
-  border-left: 4px solid var(--warning-color);
+  border-left: 4px solid #c77808;
   
   .warning-text {
     color: var(--danger-color);
@@ -291,7 +291,7 @@
 }
 
 .btn-secondary {
-  background: var(--text-light);
+  background: #4a5568;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
@@ -300,7 +300,7 @@
   transition: all 0.3s ease;
   
   &:hover {
-    background: #636e72;
+    background: #2d3748;
   }
 }
 
@@ -329,7 +329,8 @@
     
     p {
       font-size: 0.9rem;
-      color: var(--text-light);
+      color: var(--text-dark);
+      opacity: 0.75;
       margin: 0;
     }
   }
@@ -346,7 +347,8 @@
 }
 
 .text-muted {
-  color: var(--text-light);
+  color: var(--text-dark);
+  opacity: 0.75;
   font-size: 0.85rem;
   display: block;
   margin-top: 0.25rem;
@@ -358,7 +360,7 @@
 
 @media (max-width: 1024px) {
   .calculator-container {
-    grid-template-columns: 1fr;
+    // grid-template-columns: 1fr;
     
     .info-panel .card {
       position: static;
@@ -409,4 +411,19 @@
   .price-result h3 {
     font-size: 1.3rem;
   }
+}
+.pl-1 {
+  padding-left: 1rem !important;
+}
+
+.cost-item{
+  background-color: var(--p-surface-50);
+    border: var(--p-surface-50);
+}
+.container {
+  padding: 0 !important;
+}
+.label-style{
+  font-weight: 400 !important;
+    font-size: 14px;
 }

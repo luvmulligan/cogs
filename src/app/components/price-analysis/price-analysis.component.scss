@@ -37,8 +37,9 @@
   }
   
   .product-margin {
-    color: var(--success-color);
+    color: #1e8449;
     font-size: 0.9rem;
+    font-weight: 500;
   }
 }
 
@@ -47,7 +48,8 @@
   padding: 2rem;
   
   p {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
     margin-bottom: 1rem;
   }
 }
@@ -111,7 +113,8 @@
     
     small {
       font-size: 0.85rem;
-      color: var(--text-light);
+      color: var(--text-dark);
+      opacity: 0.75;
     }
   }
   
@@ -174,7 +177,8 @@
   }
   
   small {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
     font-size: 0.85rem;
   }
 }
@@ -199,7 +203,8 @@
   border-radius: 8px;
   
   p {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
     margin-bottom: 1rem;
     font-size: 1.1rem;
   }
@@ -242,7 +247,8 @@
   }
   
   small {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
     font-size: 0.85rem;
   }
 }
@@ -286,12 +292,13 @@
           
           &.unit-cost {
             font-weight: 600;
-            color: var(--success-color);
+            color: #1e8449;
             
             small {
               display: block;
               font-size: 0.75rem;
-              color: var(--text-light);
+              color: var(--text-dark);
+              opacity: 0.75;
               font-weight: normal;
             }
           }
@@ -308,7 +315,8 @@
   }
   
   .subtitle {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
     margin-bottom: 1.5rem;
   }
 }
@@ -352,9 +360,10 @@
     .recommended-badge {
       font-size: 0.7rem;
       background: #FFD700;
-      color: #333;
+      color: #1a1a1a;
       padding: 0.2rem 0.5rem;
       border-radius: 10px;
+      font-weight: 600;
     }
   }
   
@@ -366,8 +375,9 @@
   }
   
   .scenario-profit {
-    color: var(--success-color);
+    color: #1e8449;
     font-size: 0.9rem;
+    font-weight: 500;
   }
 }
 

@@ -7,7 +7,8 @@
   }
   
   .subtitle {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
     font-size: 1.1rem;
   }
 }
@@ -88,12 +89,12 @@
   
   &.intermediate {
     background: #fff3cd;
-    color: #856404;
+    color: #664d03;
   }
   
   &.advanced {
     background: #f8d7da;
-    color: #721c24;
+    color: #5a1419;
   }
 }
 
@@ -118,7 +119,8 @@
   padding: 3rem;
   
   p {
-    color: var(--text-light);
+    color: var(--text-dark);
+    opacity: 0.75;
   }
 }
 

@@ -1,13 +1,23 @@
 <div class="container" >
   <h2><span class="material-icons">data_thresholding</span> {{ t.analysisTitle }}</h2>
 
+  <!-- Selector de negocio -->
+  <div class="card mb-3" *ngIf="businesses.length > 1">
+    <h3>Seleccionar Negocio</h3>
+    <select [(ngModel)]="selectedBusiness" (change)="onBusinessChange()" class="form-control">
+      <option *ngFor="let business of businesses" [ngValue]="business">
+        {{ business.name }}
+      </option>
+    </select>
+  </div>
+
   <!-- Selector de producto -->
   <div class="product-selector card">
     <h3>{{ t.selectProduct }}</h3>
     
-    <div class="products-grid" *ngIf="products.length > 0">
+    <div class="products-grid" *ngIf="getFilteredProducts().length > 0">
       <button 
-        *ngFor="let product of products"
+        *ngFor="let product of getFilteredProducts()"
         class="product-card"
         [class.selected]="selectedProduct?.id === product.id"
         (click)="selectProduct(product)">
@@ -16,7 +26,7 @@
       </button>
     </div>
 
-    <div class="empty-state" *ngIf="products.length === 0">
+    <div class="empty-state" *ngIf="getFilteredProducts().length === 0">
       <p>No hay productos registrados aún.</p>
       <a routerLink="/calculator" class="btn btn-primary">{{ t.addProduct }}</a>
     </div>

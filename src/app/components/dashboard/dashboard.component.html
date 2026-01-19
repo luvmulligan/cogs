@@ -1,370 +1,595 @@
 <div class="container">
-  <div *ngIf="loading" style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+  <div
+    *ngIf="loading"
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 400px;
+    ">
     <p-progress-spinner ariaLabel="loading" />
   </div>
 
   <div *ngIf="!loading">
     <div class="dashboard-header">
       <h2 *ngIf="!showBusinessForm">{{ t.dashboard }}</h2>
- 
     </div>
 
     <!-- Sin negocios -->
-    <div class="empty-state card" *ngIf="businesses.length === 0 && !showBusinessForm && !loading">
+    <div
+      class="empty-state card"
+      *ngIf="businesses.length === 0 && !showBusinessForm && !loading">
       <h3>¡Bienvenido a AppCogs!</h3>
-      <p>Comienza creando tu primer negocio para empezar a gestionar costos y calcular precios.</p>
-      <button class="btn btn-primary" (click)="toggleBusinessForm()">
+      <p>
+        Comienza creando tu primer negocio para empezar a gestionar costos y
+        calcular precios.
+      </p>
+      <button
+        class="btn btn-primary create-business-btn"
+        (click)="toggleBusinessForm()">
         {{ t.createBusiness }}
       </button>
     </div>
 
     <!-- Dashboard principal -->
-    <div *ngIf="businesses.length > 0 && !showBusinessForm">
-    <!-- Selector de negocio -->
-    <div class="business-selector card" *ngIf="businesses.length > 1">
-      <p-fieldset legend="{{ t.selectBusiness }}">
-        <!-- Desktop: SelectButton -->
-        <p-selectbutton 
-          class="desktop-only"
-          [options]="businessesOptions" 
-          [(ngModel)]="selectedBusiness" 
-          optionLabel="label" 
-          optionValue="value"
-          (onChange)="onBusinessChange()"
-          aria-labelledby="basic" />
-        
-        <!-- Mobile: Dropdown -->
-        <p-select
-          class="mobile-only"
-          [options]="businessesOptions"
-          [(ngModel)]="selectedBusiness"
-          optionLabel="label"
-          optionValue="value"
-          (onChange)="onBusinessChange()"
-          placeholder="{{ t.selectBusiness }}" />
-        
-        <p-button icon="pi pi-plus" aria-label="Crear negocio" label="Crear negocio" (onClick)="toggleBusinessForm()" severity="info"></p-button>
-      </p-fieldset>
-    </div>
-
-    <!-- Información del negocio actual -->
-
-
-    <div class="business-info card" *ngIf="selectedBusiness">
-      <div class="business-header">
-        <div>
-          <h3>{{ selectedBusiness.name }}</h3>
-          <p class="industry">{{ selectedBusiness.industry }}</p>
-          <p class="description" *ngIf="selectedBusiness.description">
-            {{ selectedBusiness.description }}
-          </p>
-        </div>
-        <button class="btn btn-secondary" (click)="visibleGastosFijos = true">
-          <span class="material-icons">settings</span>
-          {{ showFixedCostsForm ? t.close : t.manageFixedCosts }}
-        </button>
-        <button class="btn btn-secondary" (click)="visibleAssets = true">
-          <span class="material-icons">inventory_2</span>
-          {{ showAssetsForm ? t.close : t.manageAssets }}
-        </button>
-
-        
-      </div>
-
-   
-
-  
-    </div>
-
-    <!-- Gráfico de Gastos por Categoría -->
-    <div class="expense-chart-section card">
-      <h4>
-        <span class="material-icons">pie_chart</span>
-        Distribución de Gastos Mensuales por Categoría
-      </h4>
-      <div class="chart-container">
-        <div class="chart-canvas-wrapper">
-          <canvas #expenseChart width="300" height="300"></canvas>
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item" *ngFor="let expense of getExpensesByCategory()">
-            <div class="legend-color" [style.background-color]="expense.color"></div>
-            <div class="legend-label">
-              <span class="legend-category">{{ expense.category }}</span>
-              <span class="legend-amount">${{ expense.amount | number:'1.2-2' }}</span>
-              <span class="legend-percentage">
-                {{ getExpensePercentage(expense.amount) | number:'1.0-0' }}%
-              </span>
+    <div
+      *ngIf="businesses.length > 0 && !showBusinessForm"
+      class="p-4">
+      <div class="surface-card p-4 shadow-2 border-round mb-4">
+        <div
+          class="flex flex-column md:flex-row md:align-items-center justify-content-between gap-3">
+          <div class="flex flex-column gap-2">
+            <div class="flex align-items-center gap-3">
+              <p-select
+                [options]="businessesOptions"
+                [(ngModel)]="selectedBusiness"
+                optionLabel="label"
+                optionValue="value"
+                (onChange)="onBusinessChange()"
+                placeholder="{{ t.selectBusiness }}"
+                class="w-full md:w-15rem">
+              </p-select>
+              <p-button
+                icon="pi pi-plus"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                (onClick)="toggleBusinessForm()"
+                pTooltip="Crear nuevo negocio">
+              </p-button>
+            </div>
+            <div *ngIf="selectedBusiness">
+              <h2 class="m-0 text-900">{{ selectedBusiness.name }}</h2>
+              <span class="text-500 font-medium">{{
+                selectedBusiness.industry
+              }}</span>
             </div>
           </div>
-          <div class="legend-total">
-            <strong>Total Mensual:</strong>
-            <strong class="total-amount">
-              ${{ getTotalExpenses() | number:'1.2-2' }}
-            </strong>
+
+          <div class="flex flex-wrap gap-2">
+            <p-button
+              label="{{ t.manageFixedCosts }}"
+              icon="pi pi-money-bill"
+              severity="info"
+              [outlined]="true"
+              (click)="visibleGastosFijos = true">
+            </p-button>
+            <p-button
+              label="{{ t.manageAssets }}"
+              icon="pi pi-box"
+              severity="info"
+              [outlined]="true"
+              (click)="visibleAssets = true">
+            </p-button>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Estadísticas -->
-    <div class="stats-grid grid grid-3">
-      <div class="stat-card card">
-        <div class="stat-icon"><span class="material-icons bigger--icon">inventory_2</span></div>
-        <div class="stat-value">{{ stats.totalProducts }}</div>
-        <div class="stat-label">{{ t.products }}</div>
+        <p
+          class="mt-3 text-600 line-height-3"
+          *ngIf="selectedBusiness?.description">
+          {{ selectedBusiness?.description }}
+        </p>
       </div>
 
-      <div class="stat-card card">
-        <div class="stat-icon"><span class="material-icons bigger--icon">data_thresholding</span></div>
-        <div class="stat-value">{{ stats.avgMargin | number:'1.1-1' }}%</div>
-        <div class="stat-label">{{ t.margin }}</div>
-      </div>
+      <div class="grid">
+        <div class="col-12 lg:col-12">
+          <div class="surface-card p-4 shadow-2 border-round h-full">
+            <div class="flex align-items-center gap-2 mb-4">
+              <i class="pi pi-chart-pie text-blue-500 text-xl"></i>
+              <h4 class="m-0">Distribución de Gastos Mensuales</h4>
+            </div>
 
-      <div class="stat-card card">
-        <div class="stat-icon"><span class="material-icons bigger--icon">check_box</span></div>
-        <div class="stat-value">{{ stats.profitableProducts }}/{{ stats.totalProducts }}</div>
-        <div class="stat-label">Productos Rentables</div>
-      </div>
-    </div>
+            <div
+              class="flex flex-column md:flex-row align-items-center justify-content-around gap-4">
+              <div style="width: 350px; height: 350px">
+                <canvas #expenseChart></canvas>
+              </div>
 
-    <!-- Lista de productos -->
-    <div class="products-section card">
-      <div class="section-header">
-        <h3>{{ t.products }}</h3>
-        <a routerLink="/calculator" class="btn btn-primary">+ {{ t.addProduct }}</a>
-      </div>
-
-      <div class="products-list" *ngIf="getProductsForBusiness().length > 0">
-        <div class="product-item" *ngFor="let product of getProductsForBusiness()">
-          <div class="product-info">
-            <div class="product-name">{{ product.name }}</div>
-            <div class="product-details">
-              <span class="product-margin">{{ t.margin }}: {{ product.targetMargin }}%</span>
-              <span class="product-units" *ngIf="product.expectedMonthlyUnits">
-                {{ product.expectedMonthlyUnits }} {{ t.expectedUnits }}
-              </span>
-              <span class="product-units warning" *ngIf="!product.expectedMonthlyUnits">
-                ⚠️ Sin unidades esperadas
-              </span>
+              <div class="flex-1 w-full">
+                <div
+                  *ngFor="let expense of getExpensesByCategory()"
+                  class="flex align-items-center justify-content-between p-2 border-bottom-1 border-200">
+                  <div class="flex align-items-center gap-2">
+                    <div
+                      class="w-1rem h-1rem border-round"
+                      [style.background-color]="expense.color"></div>
+                    <span class="text-700 font-medium">{{
+                      expense.category
+                    }}</span>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-900">
+                      ${{ expense.amount | number: "1.2-2" }}
+                    </div>
+                    <div class="text-500 text-sm">
+                      {{
+                        getExpensePercentage(expense.amount) | number: "1.0-0"
+                      }}%
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex justify-content-between p-3 mt-2 bg-blue-50 border-round text-blue-800">
+                  <span>Total Mensual:</span>
+                  <span class="text-lg"
+                    >${{ getTotalExpenses() | number: "1.2-2" }}</span
+                  >
+                </div>
+              </div>
             </div>
           </div>
-          <button class="btn-icon" (click)="editProductUnits(product)" [title]="t.edit">
-            <span class="material-icons">edit</span>
-          </button>
+        </div>
+
+        <div class="col-12 lg:col-12">
+          <div class="flex gap-3 h-full">
+            <div
+              class="surface-card p-4 shadow-2 border-round flex-1 flex align-items-center gap-4">
+              <div
+                class="w-4rem h-4rem bg-blue-100 border-circle flex align-items-center justify-content-center">
+                <i class="pi pi-shopping-cart text-blue-600 text-2xl"></i>
+              </div>
+              <div>
+                <div class="text-500 font-medium mb-1">{{ t.products }}</div>
+                <div class="text-900 text-2xl">{{ stats.totalProducts }}</div>
+              </div>
+            </div>
+
+            <div
+              class="surface-card p-4 shadow-2 border-round flex-1 flex align-items-center gap-4">
+              <div
+                class="w-4rem h-4rem bg-green-100 border-circle flex align-items-center justify-content-center">
+                <i class="pi pi-percentage text-green-600 text-2xl"></i>
+              </div>
+              <div>
+                <div class="text-500 font-medium mb-1">{{ t.margin }}</div>
+                <div class="text-900 text-2xl">
+                  {{ stats.avgMargin | number: "1.1-1" }}%
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="surface-card p-4 shadow-2 border-round flex-1 flex align-items-center gap-4">
+              <div
+                class="w-4rem h-4rem bg-purple-100 border-circle flex align-items-center justify-content-center">
+                <i class="pi pi-check-circle text-purple-600 text-2xl"></i>
+              </div>
+              <div>
+                <div class="text-500 font-medium mb-1">Rentables</div>
+                <div class="text-900 text-2xl">
+                  {{ stats.profitableProducts }}/{{ stats.totalProducts }}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="empty-products" *ngIf="getProductsForBusiness().length === 0">
-        <p>No hay productos registrados aún.</p>
-        <a routerLink="/calculator" class="btn btn-success">{{ t.addProduct }}</a>
+      <div class="grid mt-4">
+        <div class="col-12 md:col-12">
+          <div class="surface-card p-4 shadow-2 border-round">
+            <div class="flex justify-content-between align-items-center mb-4">
+              <h3 class="m-0">{{ t.products }}</h3>
+              <p-button
+                class="create-product-btn"
+                label="{{ t.addProduct }}"
+                icon="pi pi-plus"
+                size="small"
+                (click)="showCostCalculator = true; createProduct()"></p-button>
+            </div>
+
+            <div
+              class="flex flex-column gap-2"       style="max-height: 232px; overflow: scroll"
+              *ngIf="getProductsForBusiness().length > 0">
+              <div
+                *ngFor="let product of getProductsForBusiness()"
+         
+                class="flex align-items-center justify-content-between p-2 border-1 border-200 border-round hover:surface-100 transition-colors transition-duration-150">
+                <div
+                  class="flex flex-column gap-1"
+                  >
+                  <span class="text-900">{{ product.name }}</span>
+                  <div class="flex gap-3 text-sm text-600">
+                    <span>{{ t.margin }}: {{ product.targetMargin }}%</span>
+                    <span
+                      [class.text-orange-500]="!product.expectedMonthlyUnits">
+                      {{
+                        product.expectedMonthlyUnits
+                          ? product.expectedMonthlyUnits + " unid."
+                          : "⚠️ Sin unidades"
+                      }}
+                    </span>
+                  </div>
+                </div>
+                <p-button
+                  class="edit-btn"
+                  icon="pi pi-pencil"
+                  [text]="true"
+                  [rounded]="true"
+                  (click)="
+                    showCostCalculator = true; editProduct(product)
+                  "></p-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-12">
+          <div class="flex gap-3 h-full">
+            <div class="col-6">
+              <a
+                routerLink="/calculator"
+                class="no-underline">
+                <div
+                  class="surface-card p-3 shadow-2 border-round flex align-items-center gap-3 hover:surface-100 cursor-pointer border-left-3 border-blue-500">
+                  <i class="pi pi-calculator text-blue-500 text-2xl"></i>
+                  <div>
+                    <div class="text-900">{{ t.calculator }}</div>
+                    <div class="text-600 text-sm">
+                      Calcula costos y márgenes
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-6">
+              <a
+                routerLink="/analysis"
+                class="no-underline">
+                <div
+                  class="surface-card p-3 shadow-2 border-round flex align-items-center gap-3 hover:surface-100 cursor-pointer border-left-3 border-green-500">
+                  <i class="pi pi-chart-line text-green-500 text-2xl"></i>
+                  <div>
+                    <div class="text-900">Análisis de Rentabilidad</div>
+                    <div class="text-600 text-sm">
+                      Punto de equilibrio y proyecciones
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <!-- Accesos rápidos -->
-    <div class="quick-actions grid grid-3">
-      <a routerLink="/calculator" class="action-card card">
-        <div class="action-icon"><span class="material-icons bigger--icon">calculate</span></div>
-        <h4>{{ t.calculator }}</h4>
-        <p>{{ t.calculatorSubtitle }}</p>
-      </a>
-
-      <a routerLink="/analysis" class="action-card card">
-        <div class="action-icon"><span class="material-icons bigger--icon">payments</span></div>
-        <h4>{{ t.analysis }}</h4>
-        <p>{{ t.analysisSubtitle }}</p>
-      </a>
-
-      <a routerLink="/education" class="action-card card">
-        <div class="action-icon"><span class="material-icons bigger--icon">menu_book</span></div>
-        <h4>{{ t.education }}</h4>
-        <p>{{ t.guideSubtitle }}</p>
-      </a>
     </div>
   </div>
-</div>
-<p-dialog header="Nuevo negocio" [modal]="true" [(visible)]="showBusinessForm" [maximizable]="false" (onHide)="showBusinessForm=false">
-   <div class="nuevo-negocio">
-    <app-business-form 
-
-      (businessCreated)="onBusinessCreated()">
-    </app-business-form>
+  <p-dialog
+    header="Nuevo negocio"
+    [modal]="true"
+    [(visible)]="showBusinessForm"
+    [maximizable]="false"
+    (onHide)="showBusinessForm = false">
+    <div class="nuevo-negocio">
+      <app-business-form (businessCreated)="onBusinessCreated()">
+      </app-business-form>
     </div>
-</p-dialog>
+  </p-dialog>
 
-<p-drawer header=" {{ t.fixedCostsTitle }}" [(visible)]="visibleGastosFijos" position="right" styleClass="gastos-fijos">
-   <!-- Costos Fijos del Negocio -->
-      <div class="fixed-costs-section">
-        <h4><span class="material-icons">account_balance</span> {{ t.fixedCostsTitle }}</h4>
-        <p class="info-text">
-          <span class="material-icons icon-tip">info</span>
-          {{ t.fixedCostsInfo }}
-        </p>
+  <p-drawer
+    header="{{ t.fixedCostsTitle }}"
+    [(visible)]="visibleGastosFijos"
+    position="right"
+    [style]="{ width: '450px' }">
+    <div class="p-4">
+      <!-- Info Card -->
+      <div
+        class="surface-100 border-round p-3 mb-4 flex align-items-start gap-2">
+        <i class="pi pi-info-circle text-blue-500 mt-1"></i>
+        <p class="m-0 text-sm text-600 line-height-3">{{ t.fixedCostsInfo }}</p>
+      </div>
 
-        <div class="fixed-costs-list" *ngIf="businessFixedCosts.length > 0">
-          <div class="fixed-cost-item" *ngFor="let cost of businessFixedCosts">
-            <div class="cost-info">
-              <strong>{{ cost.name }}</strong>
-              <span class="cost-type-badge">{{ getCostTypeLabel(cost.type) }}</span>
-            </div>
-            <div class="cost-value">${{ cost.monthlyValue | number:'1.2-2' }}/{{ t.monthly }}</div>
-            <button class="btn-icon" (click)="deleteFixedCost(cost.id)" [title]="t.delete">
-              <span class="material-icons">delete</span>
-            </button>
-          </div>
-          <div class="fixed-costs-total">
-            <strong>{{ t.totalFixedCosts }}:</strong>
-            <strong class="total-amount">${{ getTotalFixedCosts() | number:'1.2-2' }}</strong>
-          </div>
+      <!-- Formulario para agregar -->
+      <div class="mb-4">
+        <div class="flex align-items-center gap-2 mb-3">
+          <i class="pi pi-plus-circle text-green-600"></i>
+          <h4 class="m-0 text-900">{{ t.addCostButton }}</h4>
         </div>
 
-        <div class="add-fixed-cost-form">
-          <h5>{{ t.addCostButton }}</h5>
-          <div class="form-inline">
-            <input 
-              type="text" 
-              [(ngModel)]="newFixedCost.name" 
+        <div class="flex flex-column gap-3">
+          <div class="flex flex-column gap-2">
+            <label class="font-medium text-sm text-700">Concepto</label>
+            <input
+              pInputText
+              [(ngModel)]="newFixedCost.name"
               [placeholder]="t.conceptPlaceholder"
-              class="form-control">
-            <select [(ngModel)]="newFixedCost.type" class="form-control">
-              <option value="fixed">Costo Fijo</option>
-              <option value="overhead">Gasto General</option>
-              <option value="labor">Salario Administrativo</option>
-            </select>
-            <input 
-              type="number" 
-              [(ngModel)]="newFixedCost.monthlyValue" 
+              class="w-full" />
+          </div>
+
+          <div class="flex flex-column gap-2">
+            <label class="font-medium text-sm text-700">Tipo de costo</label>
+            <p-select
+              [(ngModel)]="newFixedCost.type"
+              [options]="costTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccionar tipo"
+              class="w-full">
+            </p-select>
+          </div>
+
+          <div class="flex flex-column gap-2">
+            <label class="font-medium text-sm text-700">Monto mensual</label>
+            <p-inputnumber
+              [(ngModel)]="newFixedCost.monthlyValue"
               [placeholder]="t.monthlyCost"
-              class="form-control"
-              min="0"
-              step="0.01">
-            <button class="btn btn-success" (click)="addFixedCost()" [disabled]="!isFixedCostValid()">
-              <span class="material-icons">add</span> {{ t.add }}
-            </button>
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              [min]="0"
+              [minFractionDigits]="2"
+              class="w-full">
+            </p-inputnumber>
           </div>
+
+          <p-button
+            label="{{ t.add }}"
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="addFixedCost()"
+            [disabled]="!isFixedCostValid()"
+            class="w-full mt-2">
+          </p-button>
         </div>
       </div>
-</p-drawer>
 
-<p-drawer header=" {{ t.assetsTitle }}" [(visible)]="visibleAssets" position="right" styleClass="assets">
+      <!-- Divider -->
+      <div class="border-top-1 border-200 my-4"></div>
+
+      <!-- Lista de costos fijos -->
+      <div *ngIf="businessFixedCosts.length > 0">
+        <div class="flex align-items-center gap-2 mb-3">
+          <i class="pi pi-list text-blue-600"></i>
+          <h4 class="m-0 text-900">Costos registrados</h4>
+        </div>
+
+        <div class="flex flex-column gap-2 mb-3">
+          <div
+            *ngFor="let cost of businessFixedCosts"
+            class="surface-card border-1 border-200 border-round p-3 flex align-items-center justify-content-between gap-3">
+            <div class="flex-1">
+              <div class="font-semibold text-900 mb-1">{{ cost.name }}</div>
+              <div class="flex align-items-center gap-2">
+                <span
+                  class="text-xs bg-blue-100 text-blue-700 px-2 py-1 border-round"
+                  >{{ getCostTypeLabel(cost.type) }}</span
+                >
+                <span class="text-sm text-600"
+                  >${{ cost.monthlyValue | number: "1.2-2" }}/{{
+                    t.monthly
+                  }}</span
+                >
+              </div>
+            </div>
+            <p-button
+              icon="pi pi-trash"
+              [text]="true"
+              [rounded]="true"
+              severity="danger"
+              size="small"
+              (onClick)="deleteFixedCost(cost.id)"
+              pTooltip="{{ t.delete }}">
+            </p-button>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div
+          class="surface-200 border-round p-3 flex justify-content-between align-items-center">
+          <span class="text-900">{{ t.totalFixedCosts }}:</span>
+          <span class="text-xl text-blue-600"
+            >${{ getTotalFixedCosts() | number: "1.2-2" }}</span
+          >
+        </div>
+      </div>
+
+      <!-- Mensaje vacío -->
+      <div
+        *ngIf="businessFixedCosts.length === 0"
+        class="text-center py-4">
+        <i class="pi pi-inbox text-400 text-4xl mb-2"></i>
+        <p class="text-500 text-sm m-0">No hay costos fijos registrados</p>
+      </div>
+    </div>
+  </p-drawer>
+
+  <p-drawer
+    header=" {{ t.assetsTitle }}"
+    [(visible)]="visibleAssets"
+    position="right"
+    styleClass="assets">
     <!-- Activos e Inversiones -->
-      <div class="assets-section" >
-        <h4><span class="material-icons">inventory_2</span> {{ t.assetsTitle }}</h4>
-        <p class="info-text">
-          <span class="material-icons icon-tip">info</span>
-          {{ t.assetsInfo }}
-        </p>
+    <div class="assets-section">
+      <h4>
+        <span class="material-icons">inventory_2</span> {{ t.assetsTitle }}
+      </h4>
+      <p class="info-text">
+        <span class="material-icons icon-tip">info</span>
+        {{ t.assetsInfo }}
+      </p>
 
-        <div class="assets-list" *ngIf="assets.length > 0">
-          <div class="asset-item" *ngFor="let asset of assets">
-            <div class="asset-main-info">
-              <div class="asset-details">
-                <strong>{{ asset.name }}</strong>
-                <span class="asset-type-badge">{{ getAssetTypeLabel(asset.type) }}</span>
-                <p class="asset-description" *ngIf="asset.description">{{ asset.description }}</p>
-              </div>
-              <button class="btn-icon" (click)="deleteAsset(asset.id)" [title]="t.delete">
-                <span class="material-icons">delete</span>
-              </button>
+      <div
+        class="assets-list"
+        *ngIf="assets.length > 0">
+        <div
+          class="asset-item"
+          *ngFor="let asset of assets">
+          <div class="asset-main-info">
+            <div class="asset-details">
+              <strong>{{ asset.name }}</strong>
+              <span class="asset-type-badge">{{
+                getAssetTypeLabel(asset.type)
+              }}</span>
+              <p
+                class="asset-description"
+                *ngIf="asset.description">
+                {{ asset.description }}
+              </p>
             </div>
-            <div class="asset-financial">
-              <div class="asset-stat">
-                <span class="stat-label">{{ t.purchaseValue }}:</span>
-                <span class="stat-value">${{ asset.purchaseValue | number:'1.2-2' }}</span>
-              </div>
-              <div class="asset-stat">
-                <span class="stat-label">{{ t.estimatedDuration }}:</span>
-                <span class="stat-value">{{ asset.usefulLifeMonths }} {{ t.months }}</span>
-              </div>
-              <div class="asset-stat highlight">
-                <span class="stat-label">{{ t.monthlyDepreciation }}:</span>
-                <span class="stat-value">${{ getAssetDepreciation(asset) | number:'1.2-2' }}/{{ t.monthly }}</span>
-              </div>
-            </div>
+            <p-button
+              icon="pi pi-trash"
+              [text]="true"
+              [rounded]="true"
+              severity="danger"
+              (onClick)="deleteAsset(asset.id)"
+              pTooltip="{{ t.delete }}">
+            </p-button>
           </div>
-          
-          <div class="assets-total">
-            <strong>{{ t.totalDepreciation }}:</strong>
-            <strong class="total-amount">${{ getTotalDepreciation() | number:'1.2-2' }}</strong>
-          </div>
-          
-          <div class="combined-fixed-costs">
-            <div class="combined-row">
-              <span>{{ t.traditionalCosts }}:</span>
-              <span>${{ getTotalFixedCosts() | number:'1.2-2' }}</span>
+          <div class="asset-financial">
+            <div class="asset-stat">
+              <span class="stat-label">{{ t.purchaseValue }}:</span>
+              <span class="stat-value"
+                >${{ asset.purchaseValue | number: "1.2-2" }}</span
+              >
             </div>
-            <div class="combined-row">
-              <span>{{ t.assetDepreciation }}:</span>
-              <span>${{ getTotalDepreciation() | number:'1.2-2' }}</span>
+            <div class="asset-stat">
+              <span class="stat-label">{{ t.estimatedDuration }}:</span>
+              <span class="stat-value"
+                >{{ asset.usefulLifeMonths }} {{ t.months }}</span
+              >
             </div>
-            <div class="combined-row total">
-              <strong>{{ t.totalCombined }}:</strong>
-              <strong>${{ getTotalFixedCosts() + getTotalDepreciation() | number:'1.2-2' }}</strong>
+            <div class="asset-stat highlight">
+              <span class="stat-label">{{ t.monthlyDepreciation }}:</span>
+              <span class="stat-value"
+                >${{ getAssetDepreciation(asset) | number: "1.2-2" }}/{{
+                  t.monthly
+                }}</span
+              >
             </div>
           </div>
         </div>
 
-        <div class="add-asset-form">
-          <h5>{{ t.addAssetButton }}</h5>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>{{ t.assetName }}</label>
-              <input 
-                type="text" 
-                [(ngModel)]="newAsset.name" 
-                [placeholder]="t.assetNamePlaceholder"
-                class="form-control">
-            </div>
-            
-            <div class="form-group">
-              <label>{{ t.assetType }}</label>
-              <select [(ngModel)]="newAsset.type" class="form-control">
-                <option *ngFor="let type of assetTypes" [value]="type">
-                  {{ getAssetTypeLabel(type) }}
-                </option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label>{{ t.purchaseValue }} ($)</label>
-              <input 
-                type="number" 
-                [(ngModel)]="newAsset.purchaseValue" 
-                placeholder="0.00"
-                class="form-control"
-                min="0"
-                step="0.01">
-            </div>
-            
-            <div class="form-group">
-              <label>{{ t.estimatedDuration }}</label>
-              <input 
-                type="number" 
-                [(ngModel)]="newAsset.usefulLifeMonths" 
-                placeholder="12"
-                class="form-control"
-                min="1">
-              <small class="hint">{{ t.estimatedDurationHint }}</small>
-            </div>
-            
-            <div class="form-group full-width">
-              <label>{{ t.description }} ({{ t.optional }})</label>
-              <input 
-                type="text" 
-                [(ngModel)]="newAsset.description" 
-                [placeholder]="t.descriptionPlaceholder"
-                class="form-control">
-            </div>
+        <div class="assets-total">
+          <strong>{{ t.totalDepreciation }}:</strong>
+          <strong class="total-amount"
+            >${{ getTotalDepreciation() | number: "1.2-2" }}</strong
+          >
+        </div>
 
-            <div class="form-actions full-width">
-              <button class="btn btn-success" (click)="addAsset()" [disabled]="!isAssetValid()">
-                <span class="material-icons">add</span> {{ t.addAssetButton }}
-              </button>
-              <button class="btn btn-secondary" (click)="toggleAssetsForm()">
-                {{ t.cancel }}
-              </button>
-            </div>
+        <div class="combined-fixed-costs">
+          <div class="combined-row">
+            <span>{{ t.traditionalCosts }}:</span>
+            <span>${{ getTotalFixedCosts() | number: "1.2-2" }}</span>
+          </div>
+          <div class="combined-row">
+            <span>{{ t.assetDepreciation }}:</span>
+            <span>${{ getTotalDepreciation() | number: "1.2-2" }}</span>
+          </div>
+          <div class="combined-row total">
+            <strong>{{ t.totalCombined }}:</strong>
+            <strong
+              >${{
+                getTotalFixedCosts() + getTotalDepreciation() | number: "1.2-2"
+              }}</strong
+            >
           </div>
         </div>
       </div>
-</p-drawer>
+
+      <div class="add-asset-form">
+        <h5>{{ t.addAssetButton }}</h5>
+        <div class="flex flex-column gap-3">
+          <div class="flex flex-column gap-2">
+            <label class="font-medium">{{ t.assetName }}</label>
+            <input
+              pInputText
+              [(ngModel)]="newAsset.name"
+              [placeholder]="t.assetNamePlaceholder"
+              class="w-full" />
+          </div>
+
+          <div class="flex flex-column gap-2">
+            <label class="font-medium">{{ t.assetType }}</label>
+            <p-select
+              [(ngModel)]="newAsset.type"
+              [options]="assetTypeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccionar tipo"
+              class="w-full">
+            </p-select>
+          </div>
+
+          <div class="flex flex-column gap-2">
+            <label class="font-medium">{{ t.purchaseValue }} ($)</label>
+            <p-inputnumber
+              [(ngModel)]="newAsset.purchaseValue"
+              placeholder="0.00"
+              mode="currency"
+              currency="USD"
+              locale="en-US"
+              [min]="0"
+              [minFractionDigits]="2"
+              class="w-full">
+            </p-inputnumber>
+          </div>
+
+          <div class="flex flex-column gap-2">
+            <label class="font-medium">{{ t.estimatedDuration }}</label>
+            <p-inputnumber
+              [(ngModel)]="newAsset.usefulLifeMonths"
+              placeholder="12"
+              [min]="1"
+              suffix=" meses"
+              class="w-full">
+            </p-inputnumber>
+            <small class="text-500">{{ t.estimatedDurationHint }}</small>
+          </div>
+
+          <div class="flex flex-column gap-2">
+            <label class="font-medium"
+              >{{ t.description }} ({{ t.optional }})</label
+            >
+            <input
+              pInputText
+              [(ngModel)]="newAsset.description"
+              [placeholder]="t.descriptionPlaceholder"
+              class="w-full" />
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <p-button
+              label="{{ t.addAssetButton }}"
+              icon="pi pi-plus"
+              severity="success"
+              (onClick)="addAsset()"
+              [disabled]="!isAssetValid()"
+              class="flex-1">
+            </p-button>
+            <p-button
+              label="{{ t.cancel }}"
+              icon="pi pi-times"
+              severity="secondary"
+              [outlined]="true"
+              (onClick)="toggleAssetsForm()"
+              class="flex-1">
+            </p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-drawer>
+  <p-drawer
+    [(visible)]="showCostCalculator"
+    position="right">
+    <app-cost-calculator (productSaved)="onProductSaved()"></app-cost-calculator>
+  </p-drawer>
+</div>

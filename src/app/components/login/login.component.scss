@@ -29,7 +29,7 @@
 
   p {
     font-size: 1.1rem;
-    color: #666;
+    color: #4a4a4a;
     margin: 0;
   }
 }
@@ -41,8 +41,8 @@
 }
 
 .error-message {
-  background-color: #fee;
-  color: #c33;
+  background-color: #ffe6e6;
+  color: #b30000;
   padding: 12px;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -56,8 +56,8 @@
   gap: 12px;
   padding: 14px 24px;
   background: white;
-  color: #444;
-  border: 2px solid #ddd;
+  color: #1a1a1a;
+  border: 2px solid #999;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
@@ -101,7 +101,7 @@
 
   span {
     padding: 0 15px;
-    color: #999;
+    color: #666;
     font-size: 0.9rem;
   }
 }
@@ -136,7 +136,7 @@
     }
 
     &::placeholder {
-      color: #999;
+      color: #666;
     }
 
     &:disabled {
@@ -147,7 +147,7 @@
 
   .hint {
     font-size: 0.8rem;
-    color: #666;
+    color: #4a4a4a;
   }
 }
 
@@ -175,7 +175,7 @@
 .toggle-mode {
   text-align: center;
   font-size: 0.9rem;
-  color: #666;
+  color: #4a4a4a;
   margin-top: 5px;
 
   span {
@@ -206,7 +206,7 @@
 .privacy-text {
   text-align: center;
   font-size: 0.8rem;
-  color: #999;
+  color: #4a4a4a;
   margin: 10px 0 0 0;
   line-height: 1.4;
 }

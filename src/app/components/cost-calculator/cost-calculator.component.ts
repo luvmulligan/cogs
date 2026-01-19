@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FirebaseBusinessService } from '../../services/firebase-business.service';
@@ -6,25 +6,55 @@ import { PricingService } from '../../services/pricing.service';
 import { LanguageService, Translations } from '../../services/language.service';
 import { Business, Product, CostType } from '../../models/business.model';
 import { Subscription } from 'rxjs';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DialogModule } from 'primeng/dialog';
+import { FieldsetModule } from 'primeng/fieldset';
+import { SelectModule } from 'primeng/select';
+import { PanelModule } from 'primeng/panel';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
+import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageModule } from 'primeng/message';
+import {DividerModule} from 'primeng/divider';
+import {AccordionModule} from 'primeng/accordion';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { StateService } from '../../services/state.service';
+import { FloatLabelModule } from 'primeng/floatlabel';
+
 
 @Component({
     selector: 'app-cost-calculator',
     templateUrl: './cost-calculator.component.html',
     styleUrls: ['./cost-calculator.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule]
+    imports: [CommonModule, FormsModule, ReactiveFormsModule,ButtonModule, MessageModule, ProgressSpinnerModule, SelectButtonModule, DialogModule, FieldsetModule, SelectModule, PanelModule, AvatarModule, MenuModule, DrawerModule, InputTextModule, InputNumberModule, TooltipModule, DividerModule, AccordionModule, RadioButtonModule,TextareaModule, FloatLabelModule]
 })
 export class CostCalculatorComponent implements OnInit, OnDestroy {
+  @Output() productSaved = new EventEmitter<Product>();
+  
   calculatorForm: FormGroup;
   businesses: Business[] = [];
   products: Product[] = [];
   costTypes = Object.values(CostType);
   showProductForm = false;
   mode: 'new' | 'existing' = 'new';
-  selectedProduct: Product | null = null;
   existingCosts: any[] = [];
   t: Translations;
   private subscriptions: Subscription[] = [];
+  businessOptions: any[] = [];
+  productOptions: any[] = [];
+  costTypeOptionsCalc: any[] = [];
+  selectedBusinessId: string = '';
+  
+  // Signal para rastrear cuándo los costos están disponibles
+  private costsLoaded = signal(0);
 
   costTypeLabels: { [key: string]: string } = {
     [CostType.FIXED]: 'Costo Fijo',
@@ -35,22 +65,71 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     [CostType.SHIPPING]: 'Envío/Logística'
   };
 
+  initializeCostTypeOptions(): void {
+
+    this.costTypeOptionsCalc = [
+      { label: 'Costo Variable (materiales, insumos)', value: CostType.VARIABLE },
+      { label: 'Mano de Obra Directa', value: CostType.LABOR },
+      { label: 'Gasto General', value: CostType.OVERHEAD },
+      { label: 'Impuesto', value: CostType.TAX },
+      { label: 'Envío/Logística', value: CostType.SHIPPING }
+    ];
+  }
+
+  updateBusinessOptions(): void {
+    this.businessOptions = this.businesses.map(business => ({
+      label: business.name,
+      value: business.id
+    }));
+  }
+
+  updateProductOptions(): void {
+    const products = this.getProductsByBusiness();
+    this.productOptions = products.map(product => ({
+      label: product.name,
+      value: product.id
+    }));
+  }
+
   constructor(
     private fb: FormBuilder,
     private businessService: FirebaseBusinessService,
     private pricingService: PricingService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    public stateService: StateService
   ) {
     this.t = this.languageService.getTranslations();
     this.calculatorForm = this.fb.group({
       mode: ['new'],
-      businessId: ['', Validators.required],
+      businessId: [''],
       existingProductId: [''],
       productName: ['', Validators.required],
       productDescription: [''],
-      expectedMonthlyUnits: [100, [Validators.required, Validators.min(1)]],
+      expectedMonthlyUnits: [null, [Validators.required, Validators.min(1)]],
       targetMargin: [30, [Validators.required, Validators.min(0)]],
       costs: this.fb.array([])
+    });
+
+    // Effect para cargar costos cuando cambien el estado de edición O los costos disponibles
+    effect(() => {
+      const isEditing = this.stateService.isEditingCost();
+      const selectedProduct = this.stateService.selectedProduct();
+      const costsCount = this.costsLoaded();
+      
+      console.log('Effect triggered - isEditing:', isEditing, 'product:', selectedProduct?.id, 'costsCount signal:', costsCount);
+      
+      if (isEditing && selectedProduct && costsCount > 0) {
+        this.existingCosts = this.businessService.getCostsByProduct(selectedProduct.id);
+        console.log('Effect: Loading costs for product', selectedProduct.id, 'found:', this.existingCosts.length);
+        
+        if (this.existingCosts.length > 0) {
+          this.loadProductForEditing(selectedProduct);
+        }
+      }
+      if(this.stateService.isAddingProduct()) {
+        this.resetForm();
+      }
+
     });
   }
 
@@ -59,26 +138,43 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
       this.t = this.languageService.getTranslations();
     });
     
+    this.initializeCostTypeOptions();
+    
     const businessSub = this.businessService.businesses$.subscribe(businesses => {
       this.businesses = businesses;
+      this.updateBusinessOptions();
     });
     
     const productsSub = this.businessService.products$.subscribe(products => {
       this.products = products;
+      this.updateProductOptions();
     });
     
-    this.subscriptions.push(businessSub, productsSub);
-    // this.addCost(); // Agregar un costo inicial
-    
-    // Escuchar cambios en el modo
-    this.calculatorForm.get('mode')?.valueChanges.subscribe(mode => {
-      this.onModeChange(mode);
+    // Suscribirse a los cambios de costos y actualizar el signal
+    const costsSub = this.businessService.costs$.subscribe((allCosts) => {
+      console.log('Costs subscription fired. Total costs:', allCosts.length);
+      // Actualizar el signal para disparar el effect
+      this.costsLoaded.set(allCosts.length);
     });
     
-    // Escuchar cambios en businessId para filtrar productos
-    this.calculatorForm.get('businessId')?.valueChanges.subscribe(() => {
-      this.calculatorForm.patchValue({ existingProductId: '' });
-      this.selectedProduct = null;
+    this.subscriptions.push(businessSub, productsSub, costsSub);
+    
+    // Si estamos agregando producto, agregar un costo inicial
+    if (this.stateService.isAddingProduct()) {
+      this.addCost(true);
+    }
+  }
+  
+  loadProductForEditing(product: Product): void {
+    this.existingCosts = this.businessService.getCostsByProduct(product.id);
+    console.log('Loading costs for product:', product.id, 'Found:', this.existingCosts.length);
+    
+    // Pre-llenar el formulario con datos del producto
+    this.calculatorForm.patchValue({
+      productName: product.name,
+      productDescription: product.description,
+      expectedMonthlyUnits: product.expectedMonthlyUnits,
+      targetMargin: product.targetMargin
     });
   }
 
@@ -90,31 +186,31 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     return this.calculatorForm.get('costs') as FormArray;
   }
 
-  onModeChange(mode: string): void {
-    this.mode = mode as 'new' | 'existing';
+  // onModeChange(mode: string): void {
+  //   this.mode = mode as 'new' | 'existing';
     
-    if (mode === 'new') {
-      this.calculatorForm.get('productName')?.setValidators([Validators.required]);
-      this.calculatorForm.get('existingProductId')?.clearValidators();
-      this.selectedProduct = null;
-    } else {
-      this.calculatorForm.get('productName')?.clearValidators();
-      this.calculatorForm.get('existingProductId')?.setValidators([Validators.required]);
-    }
+  //   if (mode === 'new') {
+  //     this.calculatorForm.get('productName')?.setValidators([Validators.required]);
+  //     this.calculatorForm.get('existingProductId')?.clearValidators();
+  //     this.selectedProduct = null;
+  //   } else {
+  //     this.calculatorForm.get('productName')?.clearValidators();
+  //     this.calculatorForm.get('existingProductId')?.setValidators([Validators.required]);
+  //   }
     
-    this.calculatorForm.get('productName')?.updateValueAndValidity();
-    this.calculatorForm.get('existingProductId')?.updateValueAndValidity();
-  }
+  //   this.calculatorForm.get('productName')?.updateValueAndValidity();
+  //   this.calculatorForm.get('existingProductId')?.updateValueAndValidity();
+  // }
 
-  onProductSelect(event: any): void {
-    const productId = event.target.value;
-    if (productId) {
-      this.selectedProduct = this.businessService.getProduct(productId) || null;
-      if (this.selectedProduct) {
-        this.loadExistingCosts(productId);
-      }
-    }
-  }
+  // onProductSelect(event: any): void {
+  //   const productId = event.target.value;
+  //   if (productId) {
+  //     this.selectedProduct = this.businessService.getProduct(productId) || null;
+  //     if (this.selectedProduct) {
+  //       this.loadExistingCosts(productId);
+  //     }
+  //   }
+  // }
 
   loadExistingCosts(productId: string): void {
     this.existingCosts = this.businessService.getCostsByProduct(productId);
@@ -129,8 +225,8 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
   deleteExistingCost(costId: string): void {
     if (confirm('¿Estás seguro de eliminar este costo?')) {
       this.businessService.deleteCost(costId);
-      if (this.selectedProduct) {
-        this.loadExistingCosts(this.selectedProduct.id);
+      if (this.stateService.selectedProduct()) {
+        this.loadExistingCosts(this.stateService.selectedProduct()!.id);
       }
     }
   }
@@ -165,10 +261,10 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
       const formValue = this.calculatorForm.value;
       let product: Product;
       
-      if (this.mode === 'new') {
+      if (this.stateService.isAddingProduct()) {
         // Crear nuevo producto
         product = await this.businessService.addProduct({
-          businessId: formValue.businessId,
+          businessId: this.stateService.selectedBusiness()?.id || '',
           name: formValue.productName,
           description: formValue.productDescription,
           targetMargin: formValue.targetMargin,
@@ -176,7 +272,7 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
         });
       } else {
         // Usar producto existente
-        product = this.selectedProduct!;
+        product = this.stateService.selectedProduct()!;
         
         // Actualizar margen si cambió
         if (formValue.targetMargin !== product.targetMargin) {
@@ -208,6 +304,9 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
       alert(message);
       this.resetForm();
       
+      // Emitir evento para cerrar el drawer
+      this.productSaved.emit(product);
+      
       // Notificar que los datos se guardaron
       console.log('Producto guardado:', product);
       console.log('Total de costos:', this.businessService.getCostsByProduct(product.id).length);
@@ -222,7 +321,7 @@ export class CostCalculatorComponent implements OnInit, OnDestroy {
     });
     this.costs.clear();
     this.addCost();
-    this.selectedProduct = null;
+    // this.selectedProduct = null;
     this.existingCosts = [];
     this.mode = 'new';
   }

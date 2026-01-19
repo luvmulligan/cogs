@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 export class PriceAnalysisComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   businesses: Business[] = [];
+  selectedBusiness: Business | null = null;
   selectedProduct: Product | null = null;
   analysis: PriceAnalysis | null = null;
   costs: Cost[] = [];
@@ -58,6 +59,10 @@ export class PriceAnalysisComponent implements OnInit, OnDestroy {
     // Suscribirse a los cambios de negocios
     const businessesSub = this.businessService.businesses$.subscribe(businesses => {
       this.businesses = businesses;
+      // Seleccionar el primer negocio si no hay uno seleccionado
+      if (!this.selectedBusiness && businesses.length > 0) {
+        this.selectedBusiness = businesses[0];
+      }
     });
 
     // Suscribirse a los cambios de productos
@@ -80,6 +85,18 @@ export class PriceAnalysisComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.push(businessesSub, productsSub, costsSub, fixedCostsSub);
+  }
+
+  getFilteredProducts(): Product[] {
+    if (!this.selectedBusiness) {
+      return [];
+    }
+    return this.products.filter(p => p.businessId === this.selectedBusiness!.id);
+  }
+
+  onBusinessChange(): void {
+    this.selectedProduct = null;
+    this.analysis = null;
   }
 
   selectProduct(product: Product): void {

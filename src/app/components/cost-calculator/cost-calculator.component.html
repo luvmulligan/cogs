@@ -1,247 +1,380 @@
 <div class="container">
-  <h2><span class="material-icons icon-calc">calculate</span> {{ t.calculatorTitle }}</h2>
-  
-  <div class="info-banner card">
-    <strong><span class="material-icons icon-tip">lightbulb</span> Consejo:</strong> 
-    Registra los costos directos de tu producto (materiales, mano de obra directa, etc.). 
-    Los costos fijos del negocio (alquiler, servicios) se gestionan desde el <a routerLink="/dashboard" style="text-decoration: underline;">Dashboard</a>.
+  <div class="flex align-items-center gap-2 mb-2">
+    <i class="pi pi-calculator text-3xl text-primary"></i>
+    <h2 class="m-0">{{ stateService.isAddingProduct() ? 'Crear producto' : 'Agregar costos' }} </h2>
   </div>
 
-  <div class="calculator-container">
-    <form [formGroup]="calculatorForm" (ngSubmit)="onSubmit()" class="card">
-      <!-- Selector de modo -->
-      <div class="mode-selector">
-        <h3>¿Qué deseas hacer?</h3>
-        <div class="mode-options">
-          <label class="mode-option">
-            <input type="radio" formControlName="mode" value="new">
-            <span><span class="material-icons icon-new">note_add</span> Crear nuevo producto</span>
-          </label>
-          <label class="mode-option">
-            <input type="radio" formControlName="mode" value="existing">
-            <span><span class="material-icons icon-new">add_circle</span> Agregar costos a producto existente</span>
-          </label>
-        </div>
+  <p-message
+    severity="info"
+    styleClass="mb-2 w-full">
+    <div class="flex align-items-start gap-2">
+      <div>
+        <strong>Consejo:</strong>
+        Registra los costos directos de tu producto (materiales, mano de obra
+        directa, etc.). Los costos fijos del negocio (alquiler, servicios) se
+        gestionan desde el
+        <a
+          routerLink="/dashboard"
+          class="text-primary underline"
+          >Dashboard</a
+        >.
       </div>
+    </div>
+  </p-message>
+
+  <div class="calculator-container">
+    <form
+      [formGroup]="calculatorForm"
+      (ngSubmit)="onSubmit()">
+      <!-- <div class="flex flex-column gap-2 mb-3">
+        <label for="businessId" class="label-style">{{ t.selectBusiness }} *</label>
+        <p-select
+          id="businessId"
+          formControlName="businessId"
+          [options]="businessOptions"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="t.selectBusinessPlaceholder"
+          class="w-full">
+        </p-select>
+        <small *ngIf="businesses.length === 0" class="text-500">
+          <a routerLink="/dashboard" class="text-primary">Crea un negocio primero</a>
+        </small>
+      </div> -->
+
+      <!-- Selector de modo -->
+      <!-- <div class="mb-4">
+        <h3 class="mb-3">¿Qué deseas hacer?</h3>
+        <div class="flex flex-column gap-2">
+          <div class="flex align-items-center">
+            <p-radiobutton formControlName="mode" value="new" inputId="mode-new"></p-radiobutton>
+            <label for="mode-new" class="ml-2 cursor-pointer flex align-items-center gap-2">
+              <i class="pi pi-file text-blue-500"></i>
+              <span>Crear nuevo producto</span>
+            </label>
+          </div>
+          <div class="flex align-items-center">
+            <p-radiobutton formControlName="mode" value="existing" inputId="mode-existing"></p-radiobutton>
+            <label for="mode-existing" class="ml-2 cursor-pointer flex align-items-center gap-2">
+              <i class="pi pi-plus-circle text-green-500"></i>
+              <span>Agregar costos a producto existente</span>
+            </label>
+          </div>
+        </div>
+      </div> -->
 
       <!-- Información del producto -->
-      <h3>{{ t.productName }}</h3>
-      
-      <div class="form-group">
-        <label for="businessId">{{ t.selectBusiness }} *</label>
-        <select id="businessId" class="form-control" formControlName="businessId">
-          <option value="">{{ t.selectBusinessPlaceholder }}</option>
-          <option *ngFor="let business of businesses" [value]="business.id">
-            {{ business.name }}
-          </option>
-        </select>
-        <small *ngIf="businesses.length === 0" class="text-muted">
-          <a routerLink="/dashboard">Crea un negocio primero</a>
-        </small>
-      </div>
+      <!-- <h3 *ngIf="stateService.isEditingCost()">Editar costos de {{ stateService.selectedProduct()?.name }}</h3> -->
 
       <!-- Selector de producto existente -->
-      <div class="form-group" *ngIf="mode === 'existing'">
-        <label for="existingProductId">{{ t.selectProduct }} *</label>
-        <select 
-          id="existingProductId" 
-          class="form-control" 
+      <!-- <div class="flex flex-column gap-2 mb-3 p-3 border-round bg-blue-50" *ngIf="mode === 'existing'">
+        <label for="existingProductId" class="label-style">{{ t.selectProduct }} *</label>
+        <p-select
+          id="existingProductId"
           formControlName="existingProductId"
-          (change)="onProductSelect($event)">
-          <option value="">{{ t.selectProductPlaceholder }}</option>
-          <option *ngFor="let product of getProductsByBusiness()" [value]="product.id">
-            {{ product.name }}
-          </option>
-        </select>
-        <small *ngIf="getProductsByBusiness().length === 0 && calculatorForm.get('businessId')?.value" class="text-muted">
+          [options]="productOptions"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="t.selectProductPlaceholder"
+          (onChange)="onProductSelect($event)"
+          class="w-full">
+        </p-select>
+        <small *ngIf="getProductsByBusiness().length === 0 && calculatorForm.get('businessId')?.value" class="text-500">
           No hay productos en este negocio. Cambia a "Crear nuevo producto".
         </small>
-      </div>
+      </div> -->
 
       <!-- Información del producto seleccionado -->
-      <div class="product-info-card" *ngIf="mode === 'existing' && selectedProduct">
-        <h4>{{ selectedProduct.name }}</h4>
-        <p *ngIf="selectedProduct.description">{{ selectedProduct.description }}</p>
-        <p><strong>{{ t.margin }}:</strong> {{ selectedProduct.targetMargin }}%</p>
-        
-        <!-- Costos existentes -->
-        <div class="existing-costs" *ngIf="existingCosts.length > 0">
-          <h5>Costos Actuales:</h5>
-          <div class="existing-cost-item" *ngFor="let cost of existingCosts">
-            <div class="cost-details">
-              <strong>{{ cost.name }}</strong>
-              <span class="cost-type">{{ costTypeLabels[cost.type] }}</span>
-              <span class="cost-value">${{ cost.value | number:'1.2-2' }}</span>
+      <div
+        *ngIf="stateService.isEditingCost()"
+        class="mb-4">
+        <div class="surface-card p-2 border-round">
+          <div class="flex align-items-center justify-content-between mb-3">
+            <div>
+              <h4 class="m-0 text-900">
+                {{ stateService.selectedProduct()?.name }}
+              </h4>
+              <p
+                class="text-600 text-sm mt-1 mb-0"
+                *ngIf="stateService.selectedProduct()?.description">
+                {{ stateService.selectedProduct()?.description }}
+              </p>
             </div>
-            <button type="button" class="btn-delete-cost" (click)="deleteExistingCost(cost.id)">
-              🗑️
-            </button>
+            <span class="bg-blue-100 text-blue-700 px-3 py-2 border-round">
+              {{ t.margin }}:
+              {{ stateService.selectedProduct()?.targetMargin }}%
+            </span>
+          </div>
+
+          <p-divider></p-divider>
+
+          <!-- Costos existentes -->
+          <div class="mt-3">
+            <h5 class="text-900 mb-3 flex align-items-center gap-2">
+              <i class="pi pi-list text-blue-500"></i>
+              Costos Actuales
+            </h5>
+
+            <div
+              *ngIf="existingCosts.length > 0"
+              class="flex flex-column gap-2">
+              <div
+                *ngFor="let cost of existingCosts"
+                class="flex align-items-center justify-content-between p-1 pl-1 border-1 border-200 border-round hover:surface-100 transition-colors transition-duration-150 cost-item">
+                <div class="flex-1">
+                  <div class="flex align-items-center gap-2">
+                    <p>{{ cost.name }}</p>
+                    <span
+                      class="text-xs bg-blue-100 text-blue-700 px-2 py-1 border-round">
+                      {{ costTypeLabels[cost.type] }}
+                    </span>
+                    <span class="text-600 label-style"
+                      >${{ cost.value | number: "1.2-2" }}</span
+                    >
+                  </div>
+                </div>
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  size="small"
+                  (onClick)="deleteExistingCost(cost.id)"
+                  pTooltip="Eliminar costo">
+                </p-button>
+              </div>
+            </div>
+
+            <div
+              *ngIf="existingCosts.length === 0"
+              class="text-center py-4">
+              <i class="pi pi-inbox text-400 text-4xl mb-2"></i>
+              <p class="text-500 m-0">
+                No hay costos registrados para este producto
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Campos para nuevo producto -->
-      <div *ngIf="mode === 'new'">
-        <div class="form-group">
-          <label for="productName">{{ t.productName }} *</label>
-          <input 
-            type="text" 
-            id="productName"
-            class="form-control" 
-            formControlName="productName"
-            [placeholder]="t.productNamePlaceholder">
+      <div
+        *ngIf="stateService.isAddingProduct()"
+        class="flex flex-column gap-3 mb-3 p-3 border-round bg-green-50">
+        <div class="flex flex-column gap-2 pt-1">
+          <p-floatlabel variant="in">
+            <label
+              for="productName"
+              class="label-style label-style"
+              >{{ t.productName }} *</label
+            >
+            <input
+              pInputText
+              id="productName"
+              formControlName="productName"
+              class="w-full" />
+          </p-floatlabel>
         </div>
 
-        <div class="form-group">
-          <label for="productDescription">{{ t.description }} ({{ t.optional }})</label>
-          <textarea 
-            id="productDescription"
-            class="form-control" 
-            formControlName="productDescription"
-            rows="2"
-            [placeholder]="t.descriptionPlaceholder"></textarea>
+        <div class="flex flex-column gap-2 pt-1">
+          <p-floatlabel variant="in">
+            <label
+              for="productDescription"
+              class="label-style label-style"
+              >{{ t.description }} ({{ t.optional }})</label
+            >
+            <textarea
+              pInputTextarea
+              id="productDescription"
+              formControlName="productDescription"
+              rows="2"
+              class="w-full"></textarea>
+          </p-floatlabel>
         </div>
 
-        <div class="form-group">
-          <label for="expectedMonthlyUnits">
-            {{ t.expectedUnits }} *
-            <span class="material-icons info-icon" title="Cuántas unidades de este producto esperas vender mensualmente">info</span>
-          </label>
-          <input 
-            type="number" 
-            id="expectedMonthlyUnits"
-            class="form-control" 
-            formControlName="expectedMonthlyUnits"
-            min="1"
-            step="1"
-            placeholder="Ej: 100">
-          <small class="text-muted">
-            Los costos fijos del negocio se distribuirán proporcionalmente según estas unidades
-          </small>
+        <div class="flex flex-column gap-2 pt-1 pb-1">
+          <p-floatlabel variant="in">
+            <label
+              for="expectedMonthlyUnits"
+              class="label-style flex align-items-center gap-2 label-style"
+              style="z-index: 1">
+              {{ t.expectedUnits }} *
+              <i
+                class="pi pi-info-circle text-blue-500"
+                pTooltip="Cuántas unidades de este producto esperas vender mensualmente. Los costos fijos del negocio se distribuirán proporcionalmente según estas unidades."></i>
+            </label>
+            <p-inputnumber
+              id="expectedMonthlyUnits"
+              formControlName="expectedMonthlyUnits"
+              [min]="1"
+              [showButtons]="true"
+              class="w-full">
+            </p-inputnumber>
+          </p-floatlabel>
         </div>
-      </div>
+     
 
-      <div class="form-group">
-        <label for="targetMargin">{{ t.profitMargin }} *</label>
-        <input 
-          type="number" 
+      <div class="flex flex-column gap-2 mb-3 pt-1">
+        <p-floatlabel variant="in">
+        <label
+          for="targetMargin"
+          class="label-style" style="z-index: 1;"
+          >{{ t.profitMargin }}
+          <i
+            class="pi pi-info-circle text-blue-500"
+            pTooltip="El porcentaje de ganancia que deseas obtener."></i>
+        </label>
+        <p-inputnumber
           id="targetMargin"
-          class="form-control" 
           formControlName="targetMargin"
-          min="0"
-          step="1">
-        <small class="text-muted">El porcentaje de ganancia que deseas obtener</small>
+          [min]="0"
+          suffix="%"
+          [showButtons]="true"
+          class="w-full">
+        </p-inputnumber>
+        </p-floatlabel>
       </div>
+
+       </div>
 
       <!-- Lista de costos -->
       <div class="costs-section">
         <div class="section-header">
-          <h3>{{ mode === 'new' ? 'Costos del Producto' : 'Agregar Nuevos Costos' }}</h3>
-    
+          <!-- <h3>{{ stateService.isAddingProduct() ? 'Costos del Producto' : 'Agregar Nuevos Costos' }}</h3> -->
         </div>
 
-        <div formArrayName="costs" class="costs-list">
-          <div *ngFor="let cost of costs.controls; let i = index" 
-               [formGroupName]="i" 
-               class="cost-item">
+        <div
+          formArrayName="costs"
+          class="costs-list">
+          <div
+            *ngFor="let cost of costs.controls; let i = index"
+            [formGroupName]="i"
+            class="cost-item">
             <div class="cost-header">
               <span class="cost-number">Costo #{{ i + 1 }}</span>
-              <button 
-                type="button" 
-                class="btn-remove"
-                (click)="removeCost(i)"
-                *ngIf="costs.length > 1">
-                ✕
-              </button>
+              <p-button
+                icon="pi pi-times"
+                [text]="true"
+                [rounded]="true"
+                severity="danger"
+                size="small"
+                (onClick)="removeCost(i)"
+                *ngIf="costs.length > 1"
+                pTooltip="Eliminar costo">
+              </p-button>
             </div>
 
-            <div class="cost-fields">
-              <div class="form-group">
-                <label>Nombre del Costo</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+            <div class="flex flex-column gap-3">
+              <div class="flex flex-column gap-2 pt-1">
+                <p-floatlabel variant="in">
+                <label class="label-style text-sm">Nombre del Costo</label>
+                <input
+                  pInputText
                   formControlName="name"
-                  placeholder="Ej: Harina, Envases">
+                  class="w-full" />
+                  </p-floatlabel>
               </div>
 
-              <div class="form-group">
-                <label>Tipo de Costo</label>
-                <select class="form-control" formControlName="type">
-                  <option value="variable">Costo Variable (materiales, insumos)</option>
-                  <option value="labor">Mano de Obra Directa</option>
-                  <option value="overhead">Gasto General</option>
-                  <option value="tax">Impuesto</option>
-                  <option value="shipping">Envío/Logística</option>
-                </select>
-                <small class="text-muted">
-                  Los costos fijos del negocio (alquiler, servicios) se gestionan en el Dashboard
+              <div class="flex flex-column gap-2 pt-1">
+                <p-floatlabel variant="in">
+                <label class="label-style text-sm" style="z-index: 1;">Tipo de Costo</label>
+                <p-select
+                  formControlName="type"
+                  [options]="costTypeOptionsCalc"
+                  optionLabel="label"
+                  optionValue="value"
+                  class="w-full">
+                </p-select>
+                </p-floatlabel>
+                <small class="text-500">
+                  Los costos fijos del negocio (alquiler, servicios) se
+                  gestionan en el Dashboard
                 </small>
               </div>
 
-              <div class="form-group">
-                <label>Valor por Unidad ($)</label>
-                <input 
-                  type="number" 
-                  class="form-control" 
+              <div class="flex flex-column gap-2 pt-1">
+                <p-floatlabel variant="in">
+                <label class="label-style text-sm" style="z-index: 1;">Valor por Unidad ($)</label>
+                <p-inputnumber
                   formControlName="value"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00">
+                  mode="currency"
+                  currency="USD"
+                  locale="en-US"
+                  [min]="0"
+                  [minFractionDigits]="2"
+                  class="w-full">
+                </p-inputnumber>
+                </p-floatlabel>
               </div>
 
-              <div class="form-group form-group-full">
-                <label>Descripción (opcional)</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+              <div class="flex flex-column gap-2 pt-1">
+                <p-floatlabel variant="in">
+                <label class="label-style text-sm"
+                  >Descripción (opcional)</label
+                >
+                <input
+                  pInputText
                   formControlName="description"
-                  placeholder="Detalles adicionales">
+                  class="w-full" />
+                  </p-floatlabel>
               </div>
             </div>
           </div>
         </div>
-      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-        <button type="button" class="btn btn-primary btn-add-cost" (click)="addCost(true)">
-          + Agregar Costo
-        </button>
-      </div>
+        <div
+          class="flex mb-6"
+          style="margin-top: 3rem">
+          <p-button
+            label="Agregar Costo"
+            icon="pi pi-plus"
+            [outlined]="true"
+            (onClick)="addCost(true)"
+            type="button">
+          </p-button>
+        </div>
         <h4>Resumen</h4>
         <div class="summary-row">
           <span>Total de Costos: </span>
-          <strong>${{ calculateTotal() | number:'1.2-2' }}</strong>
+          <strong>${{ calculateTotal() | number: "1.2-2" }}</strong>
         </div>
         <div class="summary-row">
           <span>Margen Objetivo: </span>
-          <strong>{{ calculatorForm.get('targetMargin')?.value }}%</strong>
+          <strong>{{ calculatorForm.get("targetMargin")?.value }}%</strong>
         </div>
         <div class="summary-row price-row">
           <span>Precio Sugerido: </span>
-          <strong class="price">${{ calculateSuggestedPrice() | number:'1.2-2' }}</strong>
+          <strong class="price"
+            >${{ calculateSuggestedPrice() | number: "1.2-2" }}</strong
+          >
         </div>
       </div>
 
       <!-- Botones -->
-      <div class="form-actions">
-        <button 
-          type="submit" 
-          class="btn btn-success"
-          [disabled]="calculatorForm.invalid">
-          Guardar Producto
-        </button>
-        <button 
-          type="button" 
-          class="btn btn-secondary"
-          (click)="resetForm()">
-          Limpiar
-        </button>
+      <div class="flex gap-2 mt-4">
+        <p-button
+          label="Guardar Producto"
+          icon="pi pi-check"
+          severity="success"
+          type="submit"
+          [disabled]="calculatorForm.invalid"
+          class="flex-1">
+        </p-button>
+        <p-button
+          label="Limpiar"
+          icon="pi pi-refresh"
+          severity="secondary"
+          [outlined]="true"
+          type="button"
+          (onClick)="resetForm()"
+          class="flex-1">
+        </p-button>
       </div>
     </form>
 
     <!-- Panel lateral informativo -->
-    <div class="info-panel">
+    <!-- <div class="info-panel">
       <div class="card">
-        <h4>📚 Tipos de Costos</h4>
+        <h4 class="flex align-items-center gap-2"><i class="pi pi-book text-blue-500"></i> Tipos de Costos</h4>
         <div class="info-item">
           <strong>Costos Fijos:</strong>
           <p>No varían con la producción. <strong>IMPORTANTE:</strong> Si son mensuales (alquiler, servicios), especifica cuántas unidades esperas producir al mes para calcular el costo por unidad.</p>
@@ -269,23 +402,23 @@
       </div>
 
       <div class="card highlight-card">
-        <h4><span class="material-icons icon-tip">info</span> Sobre los Costos Fijos del Negocio</h4>
+        <h4 class="flex align-items-center gap-2"><i class="pi pi-info-circle text-blue-500"></i> Sobre los Costos Fijos del Negocio</h4>
         <p>
           Los costos fijos como <strong>alquiler, servicios, salarios administrativos</strong> se pagan 
           una vez al mes para todo el negocio, no por producto.
         </p>
         <p>
-          Gestiόnalos desde el <a routerLink="/dashboard" style="text-decoration: underline; font-weight: bold;">Dashboard</a> 
+          Gestiόnalos desde el <a routerLink="/dashboard" class="text-primary underline font-bold">Dashboard</a> 
           y se distribuirán automáticamente entre todos tus productos.
         </p>
-        <p class="warning-text">
-          <span class="material-icons icon-warning">warning</span> 
+        <p class="flex align-items-center gap-2 text-orange-600">
+          <i class="pi pi-exclamation-triangle"></i>
           No agregues costos fijos aquí, ya que se contarían múltiples veces
         </p>
       </div>
 
       <div class="card">
-        <h4><span class="material-icons icon-tip">tips_and_updates</span> Consejos</h4>
+        <h4 class="flex align-items-center gap-2"><i class="pi pi-lightbulb text-yellow-500"></i> Consejos</h4>
         <ul>
           <li>Incluye TODOS los costos directos del producto</li>
           <li>Considera materiales, insumos, mano de obra directa</li>
@@ -294,6 +427,6 @@
           <li>Revisa tus costos periódicamente</li>
         </ul>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>

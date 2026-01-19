@@ -18,6 +18,11 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TooltipModule } from 'primeng/tooltip';
+import { CostCalculatorComponent } from '../cost-calculator/cost-calculator.component';
+import { StateService } from '../../services/state.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -25,7 +30,9 @@ import { DrawerModule } from 'primeng/drawer';
     styleUrls: ['./dashboard.component.scss'],
     standalone: true,
     encapsulation: ViewEncapsulation.None,
-    imports: [CommonModule, FormsModule, BusinessFormComponent, ProgressSpinnerModule, SelectButtonModule, ButtonModule, DialogModule, FieldsetModule, SelectModule, PanelModule, MenuModule, DrawerModule]
+    imports: [CommonModule, FormsModule, BusinessFormComponent, ProgressSpinnerModule, SelectButtonModule, ButtonModule, DialogModule, FieldsetModule, SelectModule, PanelModule, MenuModule, DrawerModule, InputTextModule, InputNumberModule, TooltipModule,
+      CostCalculatorComponent
+    ]
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   loading: boolean = true;
@@ -62,13 +69,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   assetTypeLabels: { [key: string]: string } = {};
   visibleGastosFijos: boolean = false;
   visibleAssets: boolean = false;
+  showCostCalculator: boolean = false;
+  costTypeOptions: any[] = [];
+  assetTypeOptions: any[] = [];
+  selectedProduct!: Product;
+  addProduct: boolean = false;
+  editCost: boolean = false;
   private subscriptions: Subscription[] = [];
   @ViewChild('expenseChart', { static: false }) expenseChartRef?: ElementRef<HTMLCanvasElement>;
 
   constructor(
     private businessService: FirebaseBusinessService,
     private pricingService: PricingService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private stateService: StateService
   ) {
     this.t = this.languageService.getTranslations();
     this.updateAssetTypeLabels();
@@ -78,7 +92,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.languageService.language$.subscribe(() => {
       this.t = this.languageService.getTranslations();
       this.updateAssetTypeLabels();
+      this.updateSelectOptions();
     });
+    this.updateSelectOptions();
     setTimeout(() =>{this.loadData();this.loading = false}, 2000)
 
 
@@ -94,6 +110,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       [AssetType.TECHNOLOGY]: this.t.assetTechnology,
       [AssetType.OTHER]: this.t.assetOther
     };
+  }
+
+  updateSelectOptions(): void {
+    this.costTypeOptions = [
+      { label: 'Costo Fijo', value: CostType.FIXED },
+      { label: 'Gasto General', value: CostType.OVERHEAD },
+      { label: 'Salario Administrativo', value: CostType.LABOR }
+    ];
+
+    this.assetTypeOptions = this.assetTypes.map(type => ({
+      label: this.getAssetTypeLabel(type),
+      value: type
+    }));
   }
 
   ngOnDestroy(): void {
@@ -113,6 +142,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.updateBusinessesOptions(); // Actualizar opciones cuando cambien los negocios
       if (this.businesses.length > 0 && !this.selectedBusiness) {
         this.selectedBusiness = this.businesses[0];
+        this.stateService.setSelectedBusiness(this.selectedBusiness);
       }
       this.loadBusinessFixedCosts();
       this.calculateStats();
@@ -148,6 +178,26 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       label: business.name,
       value: business
     }));
+  }
+
+  editProduct(product: Product): void {
+    this.selectedProduct = product
+    // Lógica para editar el producto seleccionado
+    // Puedes abrir un formulario o una ventana modal para editar el producto
+    console.log('Editar producto:', this.selectedProduct);
+    this.stateService.setEditingCost(true);
+    this.stateService.setAddingProduct(false);
+
+    this.stateService.setSelectedProduct(product);
+  }
+
+  createProduct(){
+    this.stateService.setAddingProduct(true);
+    this.stateService.setEditingCost(false);
+    // Establecer el negocio seleccionado en el stateService
+    if (this.selectedBusiness) {
+      this.stateService.setSelectedBusiness(this.selectedBusiness);
+    }
   }
 
   loadBusinessFixedCosts(): void {
@@ -202,6 +252,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onBusinessChange(): void {
     if (this.selectedBusiness) {
+      this.stateService.setSelectedBusiness(this.selectedBusiness);
       this.loadBusinessFixedCosts();
       this.loadAssets();
       this.calculateStats();
@@ -336,6 +387,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.products.filter(p => p.businessId === this.selectedBusiness!.id);
   }
 
+  onProductSaved(): void {
+    this.showCostCalculator = false;
+    this.stateService.setAddingProduct(false);
+    this.stateService.setEditingCost(false);
+  }
+
   editProductUnits(product: Product): void {
     const units = prompt(
       `¿Cuántas unidades de "${product.name}" esperas vender al mes?\n\n` +
@@ -419,6 +476,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Establecer el tamaño del canvas según el contenedor
+    const container = canvas.parentElement;
+    if (container) {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    }
+
     const expenses = this.getExpensesByCategory();
     if (expenses.length === 0) {
       // Mostrar mensaje si no hay datos
@@ -461,7 +525,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
 
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 14px Arial';
+        ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(`${percentage.toFixed(0)}%`, labelX, labelY);
